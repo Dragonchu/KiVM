@@ -2,11 +2,17 @@ JAVAC := javac
 
 DIR := $(shell pwd)
 SRC := $(wildcard com/imkiva/kivm/*.java)
-OBJ := $(SRC:.java=.class)
+OBJ := $(patsubst %.java,../java-out/%.class,$(SRC))
 
 all: $(OBJ)
 	@echo " Done"
 
-%.class: %.java
+../java-out/%.class: %.java
 	@echo "[Compiling] $<"
-	@$(JAVAC) -d ../java-out -encoding utf-8 $<
+	@mkdir -p $(@D)
+	@$(JAVAC) -d $(@D) -encoding utf-8 $<
+	@touch $@
+
+clean:
+	@echo "[Cleaning]"
+	@rm -rf ../java-out
