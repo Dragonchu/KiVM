@@ -38,3 +38,13 @@ cmake-build-*/
 java-out
 
 CMakeFiles/
+
+build/
+test-*
+*.cmake
+CMakeCache.txt
+Makefile
+Testing/
+bench-*
+compileTimeConfig.h
+java
