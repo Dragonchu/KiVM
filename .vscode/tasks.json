@@ -2,6 +2,11 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "compileExampleJava",
+            "type": "shell",
+            "command": "cd java-src && make",
+        },
+        {
             "label": "cmakeBuildDebugExe",
             "type": "shell",
             "command": "cmake",
@@ -23,7 +28,10 @@
                 "showReuseMessage": true,
                 "clear": false
             },
-            "problemMatcher": []
+            "problemMatcher": [],
+            "dependsOn": [
+                "compileExampleJava"
+            ]
         },
         {
             "label": "cmakeBuildExe",

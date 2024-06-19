@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/java",
             "args": ["-cp",".:${config:rt.jar.path}", "java-out.com.imkiva.kivm.${input:className}"],
-            "stopAtEntry": false,
+            "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,

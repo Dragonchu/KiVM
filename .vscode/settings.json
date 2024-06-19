@@ -1,5 +1,5 @@
 {
-    "rt.jar.path": "/home/codespace/java/current/jre/lib/rt.jar",
+    "rt.jar.path": "/usr/local/sdkman/candidates/java/current/jre/lib/rt.jar",
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",
