@@ -35,6 +35,7 @@ namespace kivm {
             PROT_READ,
             MAP_SHARED, fd, 0);
         if (m == MAP_FAILED) {
+            //todo when map fail, throw file not found exception
             return nullptr;
         }
         *pFd = fd;

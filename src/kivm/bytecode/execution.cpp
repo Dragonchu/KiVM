@@ -24,12 +24,26 @@ namespace kivm {
             klass->setClassState(ClassState::BEING_INITIALIZED);
             D("Initializing class %S",
                 (klass->getName()).c_str());
-
+            auto klassName = klass->getName();
+            if (klassName.substr(0, 3) == L"com") {
+                EXPLORE("Initializing class %S",klassName.c_str());
+            }
             // Initialize super classes first.
+            if (klassName.substr(0, 3) == L"com") {
+                EXPLORE("Initializing super classes first.");
+            }
             Klass *super_klass = klass->getSuperClass();
             if (super_klass != nullptr) {
+                if (klassName.substr(0, 3) == L"com") {
+                    EXPLORE("SuperClass is %S",
+                        (super_klass->getName()).c_str());
+                }
                 if (!Execution::initializeClass(thread, (InstanceKlass *) super_klass)) {
                     return false;
+                }
+                if (klassName.substr(0, 3) == L"com") {
+                    EXPLORE("SuperClass %S already initialized.",
+                        (super_klass->getName()).c_str());
                 }
             }
 

@@ -176,6 +176,7 @@ namespace kivm {
         static inline void addJavaThread(JavaThread *javaThread) {
             LockGuard lockGuard(appThreadLock());
             D("Adding thread: %p", javaThread);
+            EXPLORE("Adding thread: %p", javaThread);
             getJavaThreadList().push_back(javaThread);
             ++Threads::getRunningJavaThreadCount();
         }

@@ -40,6 +40,7 @@ namespace kivm {
     }
 
     void JavaMainThread::run() {
+        EXPLORE("JavaMainThread::run()");
         setThreadName(L"JavaMainThread");
 
         // Initialize Java Virtual Machine
@@ -79,9 +80,11 @@ namespace kivm {
 
     void JavaMainThread::onThreadLaunched() {
         // Start the first app thread to run main(String[])
+        EXPLORE("Start the first app thread to run main(String[])");
         this->_nativeThread->join();
 
         // Then, let's wait for all app threads to finish
+        EXPLORE("Wait for all app threads to finish");
         for (;;) {
             int threads = Threads::getRunningJavaThreadCountLocked();
             assert(threads >= 0);

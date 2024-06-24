@@ -16,6 +16,7 @@ namespace kivm {
     }
 
     void GCThread::run() {
+        EXPLORE("GCThread.run()");
         setThreadName(L"GCThread");
 
         while (getThreadState() != ThreadState::DIED) {

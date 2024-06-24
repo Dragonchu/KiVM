@@ -28,10 +28,7 @@
                 "showReuseMessage": true,
                 "clear": false
             },
-            "problemMatcher": [],
-            "dependsOn": [
-                "compileExampleJava"
-            ]
+            "problemMatcher": []
         },
         {
             "label": "cmakeBuildExe",

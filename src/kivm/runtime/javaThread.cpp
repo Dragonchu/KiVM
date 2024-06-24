@@ -45,18 +45,22 @@ namespace kivm {
     }
 
     void JavaThread::run() {
+        EXPLORE("JavaThread.run()");
         this->setThreadName(L"JavaThread (start0)");
 
         // A thread must start with an empty frame
+        EXPLORE("Frames: %d", _frames.getSize());
         assert(_frames.getSize() == 0);
 
         // Only one argument(this) in java.lang.Thread#run()
+        EXPLORE("Args: %d", _args.size());
         assert(_args.size() == 1);
 
         JavaCall::withArgs(this, _method, _args);
     }
 
     void JavaThread::onDestroy() {
+        EXPLORE("JavaThread.onDestroy()");
         AbstractThread::onDestroy();
 
         // update java thread status

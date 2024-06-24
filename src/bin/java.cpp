@@ -55,7 +55,9 @@ int main(int argc, char **argv) {
     }
 
     JavaMainThread javaMainThread(mainClassName, arguments);
+    EXPLORE("javaMainThread.starting...");
     javaMainThread.start();
+    EXPLORE("javaMainThread.started");
 
     javaVM->DestroyJavaVM();
     return 0;
