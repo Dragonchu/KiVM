@@ -51,7 +51,9 @@ namespace kivm {
             }
         }
 
-
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Class is instance class %S", className.c_str());
+        }
         // Load instance class
         ClassPathManager *cpm = ClassPathManager::get();
         const auto &result = cpm->searchClass(className);

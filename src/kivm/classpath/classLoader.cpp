@@ -48,6 +48,10 @@ namespace kivm {
         if (iter != nullptr) {
             return iter;
         }
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Class is not loaded %S", className.c_str());
+            EXPLORE("Let's find it");
+        }
 
         // OK, let's find it!
         auto *klass = BaseClassLoader::loadClass(className);

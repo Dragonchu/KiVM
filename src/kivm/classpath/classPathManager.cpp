@@ -44,6 +44,9 @@ namespace kivm {
     }
 
     ClassSearchResult ClassPathManager::searchClass(const String &className) {
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Searching class %S", className.c_str());
+        }
         String fileName = strings::replaceAll(className, Global::SLASH, Global::PATH_SEPARATOR);
         fileName.assign(strings::replaceAll(fileName, Global::DOT, Global::PATH_SEPARATOR));
 
@@ -74,12 +77,20 @@ namespace kivm {
             }
 
             tempPath = filePathBuilder.str();
-
+            if (className.substr(0, 3) == L"com") {
+                EXPLORE("Searching %S in path %S", className.c_str(), tempPath.c_str());
+            }
             if (entry._source == ClassSource::DIR) {
+                if (className.substr(0, 3) == L"com") {
+                    EXPLORE("Entry is DIR");
+                }
                 if (FileSystem::canRead(tempPath)) {
                     buffer = (u1 *) FileSystem::createFileMapping(tempPath, &fd, &bufferSize);
                     classSource = buffer != nullptr ? ClassSource::DIR : ClassSource::NOT_FOUND;
                     classFile = std::move(tempPath);
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("Class is found %S", className.c_str());
+                    }
                     break;
                 }
 

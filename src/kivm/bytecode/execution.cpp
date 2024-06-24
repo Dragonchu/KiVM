@@ -48,8 +48,8 @@ namespace kivm {
             }
 
             if (klassName.substr(0, 3) == L"com") {
-                EXPLORE("Initializing class %S",
-                    (super_klass->getName()).c_str());
+                EXPLORE("Init class %S",
+                    klassName.c_str());
             }
             klass->initClass();
             auto *clinit = klass->getThisClassMethod(L"<clinit>", L"()V");

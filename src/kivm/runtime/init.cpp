@@ -44,14 +44,17 @@ namespace kivm {
         setThreadName(L"JavaMainThread");
 
         // Initialize Java Virtual Machine
+        EXPLORE("Initialize Java Virtual Machine");
         Threads::initializeJVM(this);
 
         D("Threads::initializeJVM() succeeded. Lunching main()");
+        EXPLORE("Threads::initializeJVM() succeeded. Lunching main()");
 
         InstanceKlass *mainClass = nullptr;
         if (_classFromStream) {
             mainClass = (InstanceKlass *) BootstrapClassLoader::get()->loadClass(_mainClassBytes, _mainClassSize);
         } else {
+            EXPLORE("MainClass is not from stream, %ls", _mainClassName.c_str());
             mainClass = (InstanceKlass *) BootstrapClassLoader::get()->loadClass(_mainClassName);
         }
         
