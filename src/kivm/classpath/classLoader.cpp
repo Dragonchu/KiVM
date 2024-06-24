@@ -58,6 +58,10 @@ namespace kivm {
         if (klass != nullptr) {
             SystemDictionary::get()->put(className, klass);
             klass->setClassState(ClassState::LOADED);
+            if (className.substr(0, 3) == L"com") {
+                EXPLORE("Class state now is LOADED %S", className.c_str());
+                EXPLORE("Linking class %S", className.c_str());
+            }
             klass->linkClass();
         }
         return klass;

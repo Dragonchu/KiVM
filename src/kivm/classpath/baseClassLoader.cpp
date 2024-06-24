@@ -60,13 +60,18 @@ namespace kivm {
         if (result._source == ClassSource::NOT_FOUND) {
             return nullptr;
         }
-
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Parsing class %S", className.c_str());
+        }
         ClassFileParser fileParser(result._file, result._buffer, result._bufferSize);
         ClassFile *classFile = fileParser.getParsedClassFile();
         Klass *klass = classFile != nullptr
                        ? new InstanceKlass(classFile, this, nullptr, ClassType::INSTANCE_CLASS)
                        : nullptr;
         result.closeResource();
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Class %S parsed", className.c_str());
+        }
         return klass;
     }
 
