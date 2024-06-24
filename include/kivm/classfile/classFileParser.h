@@ -20,9 +20,9 @@ namespace kivm {
         u1 *_content = nullptr;
         size_t _size;
 
-        ClassFile *parse();
+        ClassFile *parse(const String &className);
 
-        void parseConstantPool(ClassFile *classFile);
+        void parseConstantPool(ClassFile *classFile, const String &className);
 
         void parseInterfaces(ClassFile *classFile);
 
@@ -37,6 +37,6 @@ namespace kivm {
 
         ~ClassFileParser();
 
-        ClassFile *getParsedClassFile();
+        ClassFile *getParsedClassFile(const String &className);
     };
 }

@@ -37,19 +37,21 @@ namespace kivm {
 
     ClassFileParser::~ClassFileParser() = default;
 
-    ClassFile *ClassFileParser::getParsedClassFile() {
+    ClassFile *ClassFileParser::getParsedClassFile(const String &className) {
         if (_classFile == nullptr) {
-            _classFile = parse();
+            _classFile = parse(className);
         }
 
         return _classFile;
     }
 
-    ClassFile *ClassFileParser::parse() {
+    ClassFile *ClassFileParser::parse(const String &className) {
         if (_content == nullptr) {
             return nullptr;
         }
-
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Alloc classFile %S", className.c_str());
+        }
         ClassFile *classFile = ClassFileParser::alloc();
         if (classFile == nullptr) {
             return nullptr;
@@ -57,15 +59,28 @@ namespace kivm {
 
         _classFileStream.init(_content, _size);
 
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Read magic %S", className.c_str());
+        }
         classFile->magic = _classFileStream.get4();
         if (classFile->magic != 0xCAFEBABE) {
             ClassFileParser::dealloc(classFile);
             return nullptr;
         }
 
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Read major and minor version %S", className.c_str());
+        }
         classFile->major_version = _classFileStream.get2();
         classFile->minor_version = _classFileStream.get2();
-        parseConstantPool(classFile);
+
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Parsing Constant Pool %S", className.c_str());
+        }
+        parseConstantPool(classFile, className);
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Constant Pool parsed %S", className.c_str());
+        }
 
         classFile->access_flags = _classFileStream.get2();
         classFile->this_class = _classFileStream.get2();
@@ -84,9 +99,15 @@ namespace kivm {
         stream >> *(T *) pool[index];
     }
 
-    void ClassFileParser::parseConstantPool(ClassFile *classFile) {
+    void ClassFileParser::parseConstantPool(ClassFile *classFile, const String &className) {
         u2 count = classFile->constant_pool_count = _classFileStream.get2();
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Total %d constant in %S", count, className.c_str());
+        }
 
+        if (className.substr(0, 3) == L"com") {
+            EXPLORE("Allocate constant_pool according count %S", className.c_str());
+        }
         classFile->constant_pool = (cp_info **) Universe::allocCObject(sizeof(cp_info *) * count);
         cp_info **pool = classFile->constant_pool;
 

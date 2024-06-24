@@ -64,7 +64,7 @@ namespace kivm {
             EXPLORE("Parsing class %S", className.c_str());
         }
         ClassFileParser fileParser(result._file, result._buffer, result._bufferSize);
-        ClassFile *classFile = fileParser.getParsedClassFile();
+        ClassFile *classFile = fileParser.getParsedClassFile(className);
         Klass *klass = classFile != nullptr
                        ? new InstanceKlass(classFile, this, nullptr, ClassType::INSTANCE_CLASS)
                        : nullptr;
@@ -81,7 +81,8 @@ namespace kivm {
         }
 
         ClassFileParser fileParser(L"<stream>", classBytes, classSize);
-        ClassFile *classFile = fileParser.getParsedClassFile();
+        String s = strings::fromStdString("s");
+        ClassFile *classFile = fileParser.getParsedClassFile(s);
         return classFile != nullptr
                ? new InstanceKlass(classFile, this, nullptr, ClassType::INSTANCE_CLASS)
                : nullptr;
