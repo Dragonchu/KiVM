@@ -46,7 +46,17 @@ namespace kivm {
     void InstanceKlass::initClass() {
         D("%S: initializing static fields",
             (getName()).c_str());
-
+        
+        if (getName().substr(0, 3) == L"com") {
+            EXPLORE("initializing static fields of %S",
+                (getName()).c_str());
+        }
+        if (getName().substr(0, 3) == L"com") {
+            if (this->_staticFields.size() == 0) {
+                EXPLORE("no static fields in %S",
+                    (getName()).c_str());
+            }
+        }
         for (auto &e : this->_staticFields) {
             auto field = e.second->_field;
             // static final fields should be initialized with constant values in constant pool.
@@ -62,6 +72,10 @@ namespace kivm {
         }
         D("%S: class inited",
             (getName()).c_str());
+        if (getName().substr(0, 3) == L"com") {
+            EXPLORE("class %S inited",
+                (getName()).c_str());
+        }
     }
 
     void InstanceKlass::linkClass() {
