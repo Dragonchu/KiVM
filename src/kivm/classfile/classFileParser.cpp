@@ -114,50 +114,95 @@ namespace kivm {
         // The constant_pool table is indexed
         // from 1 to count - 1
         for (int i = 1; i < count; ++i) {
+            if (className.substr(0, 3) == L"com") {
+                EXPLORE("Now is %d tag %S", i, className.c_str());
+            }
             u1 tag = _classFileStream.peek1();
             switch (tag) {
                 case CONSTANT_Utf8:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_Utf8 (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_Utf8_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_Integer:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_Integer (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_Integer_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_Float:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_Float (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_Float_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_Long:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_Long (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_Long_info>(pool, i, _classFileStream);
                     ++i;
                     break;
                 case CONSTANT_Double:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_Double (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_Double_info>(pool, i, _classFileStream);
                     ++i;
                     break;
                 case CONSTANT_Class:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_Class (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_Class_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_String:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_String (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_String_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_Fieldref:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_Fieldref (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_Fieldref_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_Methodref:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_Methodref (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_Methodref_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_InterfaceMethodref:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_InterfaceMethodref (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_InterfaceMethodref_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_NameAndType:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_NameAndType (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_NameAndType_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_MethodHandle:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_MethodHandle (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_MethodHandle_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_MethodType:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_MethodType (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_MethodType_info>(pool, i, _classFileStream);
                     break;
                 case CONSTANT_InvokeDynamic:
+                    if (className.substr(0, 3) == L"com") {
+                        EXPLORE("%d tag is CONSTANT_InvokeDynamic (%S)", i, className.c_str());
+                    }
                     readPoolEntry<CONSTANT_InvokeDynamic_info>(pool, i, _classFileStream);
                     break;
                 default:
