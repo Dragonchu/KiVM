@@ -114,6 +114,10 @@ namespace kivm {
     ClassFileStream &ClassFileStream::operator>>(CONSTANT_Class_info &info) {
         info.tag = get1();
         info.name_index = get2();
+        if (this->_source.find(L"com") != std::wstring::npos)
+        {
+            EXPLORE("Class_info name_index: %d", info.name_index);
+        }
         return *this;
     }
 
@@ -160,6 +164,10 @@ namespace kivm {
         info.tag = get1();
         info.class_index = get2();
         info.name_and_type_index = get2();
+        if (this->_source.find(L"com") != std::wstring::npos)
+        {
+            EXPLORE("Methodref_info class_index: %d,  name_and_type_index: %d", info.class_index, info.name_and_type_index);
+        }
         return *this;
     }
 
