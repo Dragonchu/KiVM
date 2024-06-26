@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/java",
-            "args": ["-cp",".:${config:rt.jar.path}", "java-out.com.imkiva.kivm.${input:className}"],
+            "args": ["-cp","./java-out/:${config:rt.jar.path}", "com.imkiva.kivm.${input:className}"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
