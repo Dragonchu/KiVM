@@ -114,9 +114,6 @@ namespace kivm {
         // The constant_pool table is indexed
         // from 1 to count - 1
         for (int i = 1; i < count; ++i) {
-            if (className.substr(0, 3) == L"com") {
-                EXPLORE("Now is %d tag %S", i, className.c_str());
-            }
             u1 tag = _classFileStream.peek1();
             switch (tag) {
                 case CONSTANT_Utf8:

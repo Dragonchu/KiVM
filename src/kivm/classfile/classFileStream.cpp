@@ -100,15 +100,13 @@ namespace kivm {
     }
 
     ClassFileStream &ClassFileStream::operator>>(CONSTANT_Utf8_info &info) {
-        if (this->_source == L"/Users/dragonchu/Repos/KiVM/java-out/com/imkiva/kivm/Main.class"){
-            EXPLORE("Reading CONSTANT_Utf8_info, bufferStart: %d, bufferEnd: %d, current: %d", this->_bufferStart, this->_bufferEnd, this->_current);
-        }
         info.tag = get1();
         info.length = get2();
         info.bytes = new u1[info.length];
         getBytes(info.bytes, info.length);
-        if (this->_source == L"/Users/dragonchu/Repos/KiVM/java-out/com/imkiva/kivm/Main.class"){
-            EXPLORE("After read CONSTANT_Utf8_info, bufferStart: %d, bufferEnd: %d, current: %d", this->_bufferStart, this->_bufferEnd, this->_current);
+        if (this->_source.find(L"com") != std::wstring::npos){
+            std::string utf8String(reinterpret_cast<char *>(info.bytes), info.length);
+            EXPLORE("Utf8 is:   %s", utf8String.c_str());
         }
         return *this;
     }
