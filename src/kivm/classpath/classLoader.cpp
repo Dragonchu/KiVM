@@ -63,6 +63,9 @@ namespace kivm {
                 EXPLORE("Linking class %S", className.c_str());
             }
             klass->linkClass();
+            if (className.substr(0, 3) == L"com") {
+                EXPLORE("Class state now is LINKED %S", className.c_str());
+            }
         }
         return klass;
     }

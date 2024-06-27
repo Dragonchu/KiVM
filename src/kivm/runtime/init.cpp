@@ -55,6 +55,7 @@ namespace kivm {
             mainClass = (InstanceKlass *) BootstrapClassLoader::get()->loadClass(_mainClassBytes, _mainClassSize);
         } else {
             EXPLORE("MainClass is not from stream, %ls", _mainClassName.c_str());
+            EXPLORE("Loading main class %S, use BootstrapClassLoader", (_mainClassName).c_str());
             mainClass = (InstanceKlass *) BootstrapClassLoader::get()->loadClass(_mainClassName);
         }
         
@@ -62,12 +63,17 @@ namespace kivm {
             PANIC("class not found: %S", (_mainClassName).c_str());
         }
 
+        EXPLORE("Main class loaded success");
+
+        EXPLORE("Find method main(String[]) in main class %S", (_mainClassName).c_str());
         auto mainMethod = mainClass->getStaticMethod(L"main", L"([Ljava/lang/String;)V");
         if (mainMethod == nullptr) {
             PANIC("method main(String[]) not found in %S",
                 (_mainClassName).c_str());
         }
+        EXPLORE("Method main(String[]) found");
 
+        EXPLORE("Create argument array for main(String[])");
         auto stringArrayClass = (ObjectArrayKlass *) BootstrapClassLoader::get()->loadClass(L"[Ljava/lang/String;");
         auto argumentArrayOop = stringArrayClass->newInstance((int) _arguments.size());
 
@@ -75,7 +81,9 @@ namespace kivm {
             auto stringOop = java::lang::String::intern(_arguments[i]);
             argumentArrayOop->setElementAt(i, stringOop);
         }
+        EXPLORE("Argument array created");
 
+        EXPLORE("Call main(String[])");
         this->_method = mainMethod;
         this->_args.push_back(argumentArrayOop);
         JavaCall::withArgs(this, _method, _args);

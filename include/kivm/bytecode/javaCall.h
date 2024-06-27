@@ -43,7 +43,6 @@ namespace kivm {
             if (!prepareEnvironment()) {
                 return nullptr;
             }
-
             bool hasThis = !_method->isStatic();
             bool resolveTwice = forceNoResolve ? false :
                                 _method->isAbstract()
