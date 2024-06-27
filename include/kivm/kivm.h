@@ -36,6 +36,20 @@
                 ##__VA_ARGS__); \
     } while (false)
 
+inline bool shouldExplore(const std::wstring& className) {
+  if (className.find(L"com") != std::wstring::npos){
+    return true;
+  }
+  return false;
+}
+
+#define EXPLORE_IF_COM(className, fmt, ...) \
+    do { \
+        if (shouldExplore(className)) { \
+            EXPLORE("[%S]" fmt, className.c_str(), ##__VA_ARGS__); \
+        } \
+    } while (false)
+
 #define PANIC(fmt, ...) \
     do { \
        (void) fprintf(stderr, "\n\n\n*** (panic) *** [%s:%d]: " fmt "\n\n\n", \

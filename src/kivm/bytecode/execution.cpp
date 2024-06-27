@@ -25,19 +25,12 @@ bool Execution::initializeClass(JavaThread *thread, InstanceKlass *klass) {
     D("Initializing class %S",
       (klass->getName()).c_str());
     auto klassName = klass->getName();
-    if (klassName.substr(0, 3) == L"com") {
-      EXPLORE("Initializing class %S", klassName.c_str());
-    }
+    EXPLORE_IF_COM(klassName, "Initializing class");
     // Initialize super classes first.
-    if (klassName.substr(0, 3) == L"com") {
-      EXPLORE("Initializing super classes first.");
-    }
+    EXPLORE_IF_COM(klassName, "Initializing super classes first.");
     Klass *super_klass = klass->getSuperClass();
     if (super_klass != nullptr) {
-      if (klassName.substr(0, 3) == L"com") {
-        EXPLORE("SuperClass is %S",
-                (super_klass->getName()).c_str());
-      }
+      EXPLORE_IF_COM(klassName, "SuperClass is %S", super_klass->getName().c_str());
       if (!Execution::initializeClass(thread, (InstanceKlass *) super_klass)) {
         return false;
       }
