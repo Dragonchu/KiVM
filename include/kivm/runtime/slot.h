@@ -6,11 +6,11 @@
 #include <shared/types.h>
 
 namespace kivm {
-    struct Slot final {
-        bool isObject;
-        union {
-            jint i32;
-            jobject ref;
-        };
-    };
+struct Slot final {
+  bool isObject;
+  union {
+    jint i32;
+    jobject ref;
+  };
+};
 }

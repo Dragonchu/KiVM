@@ -8,7 +8,7 @@
 #include <shared/zip/libzippp.h>
 
 namespace kivm {
-    using namespace libzippp;
+using namespace libzippp;
 }
 
 #endif

@@ -9,13 +9,13 @@
 
 #if defined(KIVM_PLATFORM_APPLE)
 namespace kivm {
-    class MacOSInformation final {
-    public:
-        static String getOSName();
+class MacOSInformation final {
+ public:
+  static String getOSName();
 
-        static String getOSVersion();
+  static String getOSVersion();
 
-        static int getCpuNumbers();
-    };
+  static int getCpuNumbers();
+};
 }
 #endif

@@ -14,55 +14,55 @@
 using namespace kivm;
 
 JAVA_NATIVE void Java_java_io_FileOutputStream_initIDs(JNIEnv *env, jclass java_io_FileOutputStream) {
-    D("java/io/FileOutputStream.initIDs()V");
+  D("java/io/FileOutputStream.initIDs()V");
 }
 
 JAVA_NATIVE void Java_java_io_FileOutputStream_writeBytes(JNIEnv *env, jobject javaOutputStream,
                                                           jbyteArray b, jint off, jint len, jboolean append) {
-    static auto CLASS = (InstanceKlass *) BootstrapClassLoader::get()
-        ->loadClass(L"java/io/FileOutputStream");
-    static auto FD_CLASS = (InstanceKlass *) BootstrapClassLoader::get()
-        ->loadClass(L"java/io/FileDescriptor");
-    static auto FD_FIELD = CLASS->getInstanceFieldInfo(CLASS->getName(), L"fd", L"Ljava/io/FileDescriptor;");
-    static auto FD_INT_FIELD = FD_CLASS->getInstanceFieldInfo(FD_CLASS->getName(), L"fd", L"I");
+  static auto CLASS = (InstanceKlass *) BootstrapClassLoader::get()
+      ->loadClass(L"java/io/FileOutputStream");
+  static auto FD_CLASS = (InstanceKlass *) BootstrapClassLoader::get()
+      ->loadClass(L"java/io/FileDescriptor");
+  static auto FD_FIELD = CLASS->getInstanceFieldInfo(CLASS->getName(), L"fd", L"Ljava/io/FileDescriptor;");
+  static auto FD_INT_FIELD = FD_CLASS->getInstanceFieldInfo(FD_CLASS->getName(), L"fd", L"I");
 
-    auto byteArray = Resolver::typeArray(b);
-    if (byteArray == nullptr) {
-        SHOULD_NOT_REACH_HERE();
-    }
+  auto byteArray = Resolver::typeArray(b);
+  if (byteArray == nullptr) {
+    SHOULD_NOT_REACH_HERE();
+  }
 
-    if (byteArray->getLength() <= off && byteArray->getLength() < (off + len)) {
-        auto thread = Threads::currentThread();
-        assert(thread != nullptr);
-        thread->throwException(Global::_ArrayIndexOutOfBoundsException,
-            L"length is "
-            + std::to_wstring(byteArray->getLength())
-            + L", but index is "
-            + std::to_wstring(off), false);
-        return;
-    }
+  if (byteArray->getLength() <= off && byteArray->getLength() < (off + len)) {
+    auto thread = Threads::currentThread();
+    assert(thread != nullptr);
+    thread->throwException(Global::_ArrayIndexOutOfBoundsException,
+                           L"length is "
+                               + std::to_wstring(byteArray->getLength())
+                               + L", but index is "
+                               + std::to_wstring(off), false);
+    return;
+  }
 
-    auto streamOop = Resolver::instance(javaOutputStream);
-    instanceOop fdOop = nullptr;
-    if (!streamOop->getFieldValue(FD_FIELD, (oop *) &fdOop)) {
-        SHOULD_NOT_REACH_HERE();
-    }
+  auto streamOop = Resolver::instance(javaOutputStream);
+  instanceOop fdOop = nullptr;
+  if (!streamOop->getFieldValue(FD_FIELD, (oop *) &fdOop)) {
+    SHOULD_NOT_REACH_HERE();
+  }
 
-    intOop fdInt = nullptr;
-    if (!fdOop->getFieldValue(FD_INT_FIELD, (oop *) &fdInt)) {
-        SHOULD_NOT_REACH_HERE();
-    }
+  intOop fdInt = nullptr;
+  if (!fdOop->getFieldValue(FD_INT_FIELD, (oop *) &fdInt)) {
+    SHOULD_NOT_REACH_HERE();
+  }
 
-    int fd = fdInt->getValue();
-    auto *buf = (char *) Universe::allocCObject(sizeof(char) * len);
-    for (int i = off, j = 0; i < off + len; i++, j++) {
-        buf[j] = (char) ((intOop) byteArray->getElementAt(i))->getValue();
-    }
-    if (write(fd, buf, (size_t) len) == -1) {
-        auto thread = Threads::currentThread();
-        assert(thread != nullptr);
-        thread->throwException(Global::_IOException, L"write() failed");
-        return;
-    }
-    Universe::deallocCObject(buf);
+  int fd = fdInt->getValue();
+  auto *buf = (char *) Universe::allocCObject(sizeof(char) * len);
+  for (int i = off, j = 0; i < off + len; i++, j++) {
+    buf[j] = (char) ((intOop) byteArray->getElementAt(i))->getValue();
+  }
+  if (write(fd, buf, (size_t) len) == -1) {
+    auto thread = Threads::currentThread();
+    assert(thread != nullptr);
+    thread->throwException(Global::_IOException, L"write() failed");
+    return;
+  }
+  Universe::deallocCObject(buf);
 }

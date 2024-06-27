@@ -163,20 +163,20 @@
 #define INSTR_NUM_OPCODES           OPC_NUM_OPCODES
 
 namespace kivm {
-    using address = void *;
+using address = void *;
 
-    enum TosState {           // describes the tos cache contents
-        btos = 0,             // byte, bool tos cached
-        ztos = 1,             // byte, bool tos cached
-        ctos = 2,             // char tos cached
-        stos = 3,             // short tos cached
-        itos = 4,             // int tos cached
-        ltos = 5,             // long tos cached
-        ftos = 6,             // float tos cached
-        dtos = 7,             // double tos cached
-        atos = 8,             // object cached
-        vtos = 9,             // tos not cached
-        number_of_states,
-        ilgl                  // illegal state: should not occur
-    };
+enum TosState {           // describes the tos cache contents
+  btos = 0,             // byte, bool tos cached
+  ztos = 1,             // byte, bool tos cached
+  ctos = 2,             // char tos cached
+  stos = 3,             // short tos cached
+  itos = 4,             // int tos cached
+  ltos = 5,             // long tos cached
+  ftos = 6,             // float tos cached
+  dtos = 7,             // double tos cached
+  atos = 8,             // object cached
+  vtos = 9,             // tos not cached
+  number_of_states,
+  ilgl                  // illegal state: should not occur
+};
 }

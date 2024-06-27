@@ -5,7 +5,7 @@
 #include <kivm/bytecode2/interpreterMacroAssembler.h>
 
 namespace kivm {
-    void InterpreterMacroAssembler::flush() {
-        // TODO
-    }
+void InterpreterMacroAssembler::flush() {
+  // TODO
+}
 }

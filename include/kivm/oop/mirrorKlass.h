@@ -6,14 +6,14 @@
 #include <kivm/oop/instanceKlass.h>
 
 namespace kivm {
-    class mirrorKlass : public InstanceKlass {
-    public:
-        mirrorKlass() = delete;
+class mirrorKlass : public InstanceKlass {
+ public:
+  mirrorKlass() = delete;
 
-        mirrorKlass(const mirrorKlass &) = delete;
+  mirrorKlass(const mirrorKlass &) = delete;
 
-        mirrorKlass(mirrorKlass &&) noexcept = delete;
+  mirrorKlass(mirrorKlass &&) noexcept = delete;
 
-        static mirrorOop newMirror(Klass *target, mirrorOop loader);
-    };
+  static mirrorOop newMirror(Klass *target, mirrorOop loader);
+};
 }

@@ -6,8 +6,8 @@
 #include <string>
 
 namespace kivm {
-    namespace dl {
-        using DLHandler = void *;
-        using DLSymbol = void *;
-    }
+namespace dl {
+using DLHandler = void *;
+using DLSymbol = void *;
+}
 }

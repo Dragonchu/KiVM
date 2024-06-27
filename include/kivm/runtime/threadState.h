@@ -4,7 +4,7 @@
 #pragma once
 
 namespace kivm {
-    enum ThreadState {
-        RUNNING, BLOCKED, DIED
-    };
+enum ThreadState {
+  RUNNING, BLOCKED, DIED
+};
 }

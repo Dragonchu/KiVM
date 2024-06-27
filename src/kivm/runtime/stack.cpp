@@ -6,26 +6,26 @@
 
 namespace kivm {
 
-    SlotArray::SlotArray(int size)
-        : _size(size), _elements(nullptr) {
-        if (size > 0) {
-            this->_elements = new Slot[size];
-            memset(this->_elements, '\0', sizeof(Slot) * size);
-        }
-    }
+SlotArray::SlotArray(int size)
+    : _size(size), _elements(nullptr) {
+  if (size > 0) {
+    this->_elements = new Slot[size];
+    memset(this->_elements, '\0', sizeof(Slot) * size);
+  }
+}
 
-    SlotArray::~SlotArray() {
-        if (this->_elements != nullptr) {
-            delete[] this->_elements;
-            this->_elements = nullptr;
-        }
-    }
+SlotArray::~SlotArray() {
+  if (this->_elements != nullptr) {
+    delete[] this->_elements;
+    this->_elements = nullptr;
+  }
+}
 
-    Stack::Stack(int size)
-        : _array(size), _sp(0) {
-    }
+Stack::Stack(int size)
+    : _array(size), _sp(0) {
+}
 
-    Locals::Locals(int size)
-        : _array(size) {
-    }
+Locals::Locals(int size)
+    : _array(size) {
+}
 }

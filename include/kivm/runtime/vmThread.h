@@ -7,6 +7,6 @@
 #include <thread>
 
 namespace kivm {
-    class VMThread : public AbstractThread {
-    };
+class VMThread : public AbstractThread {
+};
 }

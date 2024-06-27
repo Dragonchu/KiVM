@@ -13,224 +13,223 @@
 #include <kivm/memory/universe.h>
 
 namespace kivm {
-    class Klass;
+class Klass;
 
-    class InstanceKlass;
+class InstanceKlass;
 
-    class RuntimeConstantPool;
+class RuntimeConstantPool;
 
-    namespace pools {
-        using ClassPoolEntey = Klass *;
-        using StringPoolEntry = instanceOop;
-        using MethodPoolEntry = Method *;
-        using FieldPoolEntry = FieldID *;
-        using Utf8PoolEntry = String *;
-        using NameAndTypePoolEntry = std::pair<Utf8PoolEntry, Utf8PoolEntry> *;
+namespace pools {
+using ClassPoolEntey = Klass *;
+using StringPoolEntry = instanceOop;
+using MethodPoolEntry = Method *;
+using FieldPoolEntry = FieldID *;
+using Utf8PoolEntry = String *;
+using NameAndTypePoolEntry = std::pair<Utf8PoolEntry, Utf8PoolEntry> *;
 
-        struct InvokeDynamicInfo {
-            u2 methodIndex;
-            NameAndTypePoolEntry methodNameAndType;
-        };
-        using InvokeDynamicPoolEntry =  InvokeDynamicInfo *;
+struct InvokeDynamicInfo {
+  u2 methodIndex;
+  NameAndTypePoolEntry methodNameAndType;
+};
+using InvokeDynamicPoolEntry = InvokeDynamicInfo *;
 
-        template<typename T, typename Creator,int CONSTANT_TAG1, int CONSTANT_TAG2 = CONSTANT_TAG1>
-        class Pool {
-        private:
-            cp_info **_raw_pool = nullptr;
-            void **_pool = nullptr;
+template<typename T, typename Creator, int CONSTANT_TAG1, int CONSTANT_TAG2 = CONSTANT_TAG1>
+class Pool {
+ private:
+  cp_info **_raw_pool = nullptr;
+  void **_pool = nullptr;
 
-            Creator _creator;
+  Creator _creator;
 
-        public:
-            inline void setRawPool(cp_info **rawPool, void **pool) {
-                this->_raw_pool = rawPool;
-                this->_pool = pool;
-            }
+ public:
+  inline void setRawPool(cp_info **rawPool, void **pool) {
+    this->_raw_pool = rawPool;
+    this->_pool = pool;
+  }
 
-            inline T findOrNew(RuntimeConstantPool *rt, int index) {
-                if (_raw_pool[index]->tag != CONSTANT_TAG1
-                    && _raw_pool[index]->tag != CONSTANT_TAG2) {
-                    PANIC("Accessing an incompatible constant entry may cause undefined behavior, panicked.");
-                }
-                void *value = _pool[index];
-                if (value != nullptr) {
-                    return (T) value;
-                }
-                T created = _creator(rt, _raw_pool, index);
-                _pool[index] = created;
-                return created;
-            }
-        };
-
-        template<typename PrimitiveType, typename EntryType>
-        struct PrimitiveConstantCreator {
-            inline PrimitiveType *operator()(RuntimeConstantPool *rt, cp_info **pool, int index) {
-                auto primitiveInfo = (EntryType *) pool[index];
-                return new PrimitiveType(primitiveInfo->getConstant());
-            }
-        };
-
-        struct Utf8ConstantCreator {
-            inline String *operator()(RuntimeConstantPool *rt, cp_info **pool, int index) {
-                auto primitiveInfo = (CONSTANT_Utf8_info *) pool[index];
-                return new String(primitiveInfo->getConstant());
-            }
-        };
-
-        struct ClassCreator {
-            ClassPoolEntey operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
-        };
-
-        struct StringCreator {
-            StringPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
-        };
-
-        struct MethodCreator {
-            MethodPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
-        };
-
-        struct StaticFieldCreator {
-            FieldPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
-        };
-
-        struct InstanceFieldCreator {
-            FieldPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
-        };
-
-        struct NameAndTypeCreator {
-            NameAndTypePoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
-        };
-
-        struct InvokeDynamicCreator {
-            InvokeDynamicPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
-        };
-
-
-        using IntegerPool = Pool<jint *, PrimitiveConstantCreator<jint, CONSTANT_Integer_info>, CONSTANT_Integer>;
-        using FloatPool = Pool<jfloat *, PrimitiveConstantCreator<jfloat, CONSTANT_Float_info>, CONSTANT_Float>;
-        using LongPool = Pool<jlong *, PrimitiveConstantCreator<jlong, CONSTANT_Long_info>, CONSTANT_Long>;
-        using DoublePool = Pool<jdouble *, PrimitiveConstantCreator<jdouble, CONSTANT_Double_info>, CONSTANT_Double>;
-        using Utf8Pool = Pool<Utf8PoolEntry, Utf8ConstantCreator, CONSTANT_Utf8>;
-        using NameAndTypePool = Pool<NameAndTypePoolEntry, NameAndTypeCreator, CONSTANT_NameAndType>;
-        using InvokeDynamicPool = Pool<InvokeDynamicPoolEntry, InvokeDynamicCreator, CONSTANT_InvokeDynamic>;
-
-        using ClassPool = Pool<ClassPoolEntey, ClassCreator, CONSTANT_Class>;
-        using StringPool = Pool<StringPoolEntry, StringCreator, CONSTANT_String>;
-        using MethodPool = Pool<MethodPoolEntry, MethodCreator, CONSTANT_Methodref, CONSTANT_InterfaceMethodref>;
-        using StaticFieldPool = Pool<FieldPoolEntry, StaticFieldCreator, CONSTANT_Fieldref>;
-        using InstanceFieldPool = Pool<FieldPoolEntry, InstanceFieldCreator, CONSTANT_Fieldref>;
+  inline T findOrNew(RuntimeConstantPool *rt, int index) {
+    if (_raw_pool[index]->tag != CONSTANT_TAG1
+        && _raw_pool[index]->tag != CONSTANT_TAG2) {
+      PANIC("Accessing an incompatible constant entry may cause undefined behavior, panicked.");
     }
+    void *value = _pool[index];
+    if (value != nullptr) {
+      return (T) value;
+    }
+    T created = _creator(rt, _raw_pool, index);
+    _pool[index] = created;
+    return created;
+  }
+};
 
-    class RuntimeConstantPool final {
-        friend class CopyingHeap;
+template<typename PrimitiveType, typename EntryType>
+struct PrimitiveConstantCreator {
+  inline PrimitiveType *operator()(RuntimeConstantPool *rt, cp_info **pool, int index) {
+    auto primitiveInfo = (EntryType *) pool[index];
+    return new PrimitiveType(primitiveInfo->getConstant());
+  }
+};
 
-    private:
-        ClassLoader *_classLoader = nullptr;
-        cp_info **_rawPool = nullptr;
-        // constant-pool-index -> constant
-        void **_pool = nullptr;
-        int _entryCount;
+struct Utf8ConstantCreator {
+  inline String *operator()(RuntimeConstantPool *rt, cp_info **pool, int index) {
+    auto primitiveInfo = (CONSTANT_Utf8_info *) pool[index];
+    return new String(primitiveInfo->getConstant());
+  }
+};
 
-        pools::ClassPool _classPool;
-        pools::StringPool _stringPool;
-        pools::MethodPool _methodPool;
-        pools::StaticFieldPool _staticFieldPool;
-        pools::InstanceFieldPool _instanceFieldPool;
-        pools::NameAndTypePool _nameAndTypePool;
-        pools::InvokeDynamicPool _invokeDynamicPool;
-        pools::Utf8Pool _utf8Pool;
-        pools::IntegerPool _intPool;
-        pools::FloatPool _floatPool;
-        pools::LongPool _longPool;
-        pools::DoublePool _doublePool;
+struct ClassCreator {
+  ClassPoolEntey operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
+};
 
-    public:
-        explicit RuntimeConstantPool(InstanceKlass *instanceKlass);
+struct StringCreator {
+  StringPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
+};
 
-        inline void attachConstantPool(cp_info **rawPool, int count) {
-            this->_entryCount = count;
-            this->_rawPool = rawPool;
-            this->_pool = (void **) Universe::allocCObject(sizeof(void *) * count);
-            _classPool.setRawPool(rawPool, _pool);
-            _stringPool.setRawPool(rawPool, _pool);
-            _methodPool.setRawPool(rawPool, _pool);
-            _staticFieldPool.setRawPool(rawPool, _pool);
-            _instanceFieldPool.setRawPool(rawPool, _pool);
-            _intPool.setRawPool(rawPool, _pool);
-            _floatPool.setRawPool(rawPool, _pool);
-            _longPool.setRawPool(rawPool, _pool);
-            _doublePool.setRawPool(rawPool, _pool);
-            _utf8Pool.setRawPool(rawPool, _pool);
-            _nameAndTypePool.setRawPool(rawPool, _pool);
-            _invokeDynamicPool.setRawPool(rawPool, _pool);
-        }
+struct MethodCreator {
+  MethodPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
+};
 
-        inline cp_info **getRawPool() {
-            return _rawPool;
-        }
+struct StaticFieldCreator {
+  FieldPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
+};
 
-        inline int getConstantTag(int index) {
-            return _rawPool[index]->tag;
-        }
+struct InstanceFieldCreator {
+  FieldPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
+};
 
-        inline pools::ClassPoolEntey getClass(int index) {
-            assert(this->_rawPool != nullptr);
-            return _classPool.findOrNew(this, index);
-        }
+struct NameAndTypeCreator {
+  NameAndTypePoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
+};
 
-        inline pools::StringPoolEntry getString(int index) {
-            assert(this->_rawPool != nullptr);
-            return _stringPool.findOrNew(this, index);
-        }
+struct InvokeDynamicCreator {
+  InvokeDynamicPoolEntry operator()(RuntimeConstantPool *rt, cp_info **pool, int index);
+};
 
-        inline pools::MethodPoolEntry getMethod(int index) {
-            assert(this->_rawPool != nullptr);
-            return _methodPool.findOrNew(this, index);
-        }
+using IntegerPool = Pool<jint *, PrimitiveConstantCreator<jint, CONSTANT_Integer_info>, CONSTANT_Integer>;
+using FloatPool = Pool<jfloat *, PrimitiveConstantCreator<jfloat, CONSTANT_Float_info>, CONSTANT_Float>;
+using LongPool = Pool<jlong *, PrimitiveConstantCreator<jlong, CONSTANT_Long_info>, CONSTANT_Long>;
+using DoublePool = Pool<jdouble *, PrimitiveConstantCreator<jdouble, CONSTANT_Double_info>, CONSTANT_Double>;
+using Utf8Pool = Pool<Utf8PoolEntry, Utf8ConstantCreator, CONSTANT_Utf8>;
+using NameAndTypePool = Pool<NameAndTypePoolEntry, NameAndTypeCreator, CONSTANT_NameAndType>;
+using InvokeDynamicPool = Pool<InvokeDynamicPoolEntry, InvokeDynamicCreator, CONSTANT_InvokeDynamic>;
 
-        inline pools::FieldPoolEntry getStaticField(int index) {
-            assert(this->_rawPool != nullptr);
-            return _staticFieldPool.findOrNew(this, index);
-        }
+using ClassPool = Pool<ClassPoolEntey, ClassCreator, CONSTANT_Class>;
+using StringPool = Pool<StringPoolEntry, StringCreator, CONSTANT_String>;
+using MethodPool = Pool<MethodPoolEntry, MethodCreator, CONSTANT_Methodref, CONSTANT_InterfaceMethodref>;
+using StaticFieldPool = Pool<FieldPoolEntry, StaticFieldCreator, CONSTANT_Fieldref>;
+using InstanceFieldPool = Pool<FieldPoolEntry, InstanceFieldCreator, CONSTANT_Fieldref>;
+}
 
-        inline pools::FieldPoolEntry getInstanceField(int index) {
-            assert(this->_rawPool != nullptr);
-            return _instanceFieldPool.findOrNew(this, index);
-        }
+class RuntimeConstantPool final {
+  friend class CopyingHeap;
 
-        inline pools::Utf8PoolEntry getUtf8(int index) {
-            assert(this->_rawPool != nullptr);
-            return _utf8Pool.findOrNew(this, index);
-        }
+ private:
+  ClassLoader *_classLoader = nullptr;
+  cp_info **_rawPool = nullptr;
+  // constant-pool-index -> constant
+  void **_pool = nullptr;
+  int _entryCount;
 
-        inline pools::NameAndTypePoolEntry getNameAndType(int index) {
-            assert(this->_rawPool != nullptr);
-            return _nameAndTypePool.findOrNew(this, index);
-        }
+  pools::ClassPool _classPool;
+  pools::StringPool _stringPool;
+  pools::MethodPool _methodPool;
+  pools::StaticFieldPool _staticFieldPool;
+  pools::InstanceFieldPool _instanceFieldPool;
+  pools::NameAndTypePool _nameAndTypePool;
+  pools::InvokeDynamicPool _invokeDynamicPool;
+  pools::Utf8Pool _utf8Pool;
+  pools::IntegerPool _intPool;
+  pools::FloatPool _floatPool;
+  pools::LongPool _longPool;
+  pools::DoublePool _doublePool;
 
-        inline pools::InvokeDynamicPoolEntry getInvokeDynamic(int index) {
-            assert(this->_rawPool != nullptr);
-            return _invokeDynamicPool.findOrNew(this, index);
-        }
+ public:
+  explicit RuntimeConstantPool(InstanceKlass *instanceKlass);
 
-        inline jint getInt(int index) {
-            assert(this->_rawPool != nullptr);
-            return *_intPool.findOrNew(this, index);
-        }
+  inline void attachConstantPool(cp_info **rawPool, int count) {
+    this->_entryCount = count;
+    this->_rawPool = rawPool;
+    this->_pool = (void **) Universe::allocCObject(sizeof(void *) * count);
+    _classPool.setRawPool(rawPool, _pool);
+    _stringPool.setRawPool(rawPool, _pool);
+    _methodPool.setRawPool(rawPool, _pool);
+    _staticFieldPool.setRawPool(rawPool, _pool);
+    _instanceFieldPool.setRawPool(rawPool, _pool);
+    _intPool.setRawPool(rawPool, _pool);
+    _floatPool.setRawPool(rawPool, _pool);
+    _longPool.setRawPool(rawPool, _pool);
+    _doublePool.setRawPool(rawPool, _pool);
+    _utf8Pool.setRawPool(rawPool, _pool);
+    _nameAndTypePool.setRawPool(rawPool, _pool);
+    _invokeDynamicPool.setRawPool(rawPool, _pool);
+  }
 
-        inline jlong getLong(int index) {
-            assert(this->_rawPool != nullptr);
-            return *_longPool.findOrNew(this, index);
-        }
+  inline cp_info **getRawPool() {
+    return _rawPool;
+  }
 
-        inline jfloat getFloat(int index) {
-            assert(this->_rawPool != nullptr);
-            return *_floatPool.findOrNew(this, index);
-        }
+  inline int getConstantTag(int index) {
+    return _rawPool[index]->tag;
+  }
 
-        inline jdouble getDouble(int index) {
-            assert(this->_rawPool != nullptr);
-            return *_doublePool.findOrNew(this, index);
-        }
-    };
+  inline pools::ClassPoolEntey getClass(int index) {
+    assert(this->_rawPool != nullptr);
+    return _classPool.findOrNew(this, index);
+  }
+
+  inline pools::StringPoolEntry getString(int index) {
+    assert(this->_rawPool != nullptr);
+    return _stringPool.findOrNew(this, index);
+  }
+
+  inline pools::MethodPoolEntry getMethod(int index) {
+    assert(this->_rawPool != nullptr);
+    return _methodPool.findOrNew(this, index);
+  }
+
+  inline pools::FieldPoolEntry getStaticField(int index) {
+    assert(this->_rawPool != nullptr);
+    return _staticFieldPool.findOrNew(this, index);
+  }
+
+  inline pools::FieldPoolEntry getInstanceField(int index) {
+    assert(this->_rawPool != nullptr);
+    return _instanceFieldPool.findOrNew(this, index);
+  }
+
+  inline pools::Utf8PoolEntry getUtf8(int index) {
+    assert(this->_rawPool != nullptr);
+    return _utf8Pool.findOrNew(this, index);
+  }
+
+  inline pools::NameAndTypePoolEntry getNameAndType(int index) {
+    assert(this->_rawPool != nullptr);
+    return _nameAndTypePool.findOrNew(this, index);
+  }
+
+  inline pools::InvokeDynamicPoolEntry getInvokeDynamic(int index) {
+    assert(this->_rawPool != nullptr);
+    return _invokeDynamicPool.findOrNew(this, index);
+  }
+
+  inline jint getInt(int index) {
+    assert(this->_rawPool != nullptr);
+    return *_intPool.findOrNew(this, index);
+  }
+
+  inline jlong getLong(int index) {
+    assert(this->_rawPool != nullptr);
+    return *_longPool.findOrNew(this, index);
+  }
+
+  inline jfloat getFloat(int index) {
+    assert(this->_rawPool != nullptr);
+    return *_floatPool.findOrNew(this, index);
+  }
+
+  inline jdouble getDouble(int index) {
+    assert(this->_rawPool != nullptr);
+    return *_doublePool.findOrNew(this, index);
+  }
+};
 }

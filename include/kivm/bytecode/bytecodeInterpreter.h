@@ -9,17 +9,17 @@
 #include <kivm/runtime/javaThread.h>
 
 namespace kivm {
-    class ByteCodeInterpreter final {
-    public:
-        /**
-         * Run a thread method
-         *
-         * @param thread Java Thread that contains method
-         * @return method return value(nullptr if void) o
-         *         exception object(if thrown and not handled)
-         */
-        static oop interp(JavaThread *thread);
+class ByteCodeInterpreter final {
+ public:
+  /**
+   * Run a thread method
+   *
+   * @param thread Java Thread that contains method
+   * @return method return value(nullptr if void) o
+   *         exception object(if thrown and not handled)
+   */
+  static oop interp(JavaThread *thread);
 
-        static void initialize();
-    };
+  static void initialize();
+};
 }

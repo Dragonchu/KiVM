@@ -8,56 +8,56 @@
 #include <shared/monitor.h>
 
 namespace kivm {
-    enum GCState {
-        GC_STOPPED,
-        GC_RUNNING,
-        ENJOYING_HOLIDAY,
-        WAITING_FOR_SAFEPOINT,
-    };
+enum GCState {
+  GC_STOPPED,
+  GC_RUNNING,
+  ENJOYING_HOLIDAY,
+  WAITING_FOR_SAFEPOINT,
+};
 
-    enum GCReason {
-        GC_FOR_MALLOC,
-        GC_EXPLICIT,
-        GC_CONCURRENT,
-    };
+enum GCReason {
+  GC_FOR_MALLOC,
+  GC_EXPLICIT,
+  GC_CONCURRENT,
+};
 
-    class GCThread : public VMThread {
-    private:
-        static GCThread *sGCThreadInstance;
+class GCThread : public VMThread {
+ private:
+  static GCThread *sGCThreadInstance;
 
-    public:
-        inline static GCThread *get() {
-            if (sGCThreadInstance == nullptr) {
-                WARN("GCThread not initialized");
-                return nullptr;
-            }
-            return sGCThreadInstance;
-        }
+ public:
+  inline static GCThread *get() {
+    if (sGCThreadInstance == nullptr) {
+      WARN("GCThread not initialized");
+      return nullptr;
+    }
+    return sGCThreadInstance;
+  }
 
-        static void initialize();
+  static void initialize();
 
-    private:
-        GCState _gcState;
-        Monitor _triggerMonitor;
-        Monitor _gcWaitMonitor;
+ private:
+  GCState _gcState;
+  Monitor _triggerMonitor;
+  Monitor _gcWaitMonitor;
 
-    private:
-        bool isAllThreadInSafePoint();
+ private:
+  bool isAllThreadInSafePoint();
 
-        void doGarbageCollection();
+  void doGarbageCollection();
 
-    protected:
-        void run() override;
+ protected:
+  void run() override;
 
-    public:
-        Monitor *required();
+ public:
+  Monitor *required();
 
-        void wait();
+  void wait();
 
-        void stop();
+  void stop();
 
-        inline GCState getState() const {
-            return _gcState;
-        }
-    };
+  inline GCState getState() const {
+    return _gcState;
+  }
+};
 }

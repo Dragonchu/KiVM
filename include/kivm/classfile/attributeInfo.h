@@ -44,515 +44,514 @@
 #define ATTRIBUTE_INVALID 99
 
 namespace kivm {
-    class ClassFileStream;
+class ClassFileStream;
 
+/**
+ * Attribute info
+ */
+struct attribute_info {
+  /**
+   * The value of the {@code attribute_name_index} must be
+   * a valid unsigned 16-bit index into the {@code constant_pool} of the class.
+   * The {@code constant_pool} entry at attribute_name_index must be
+   * a {@code CONSTANT_Utf8_info} structure (§4.4.7)
+   * representing the name of the attribute.
+   */
+  u2 attribute_name_index;
+
+  /**
+   * The value of the {@code attribute_length} item indicates
+   * the length of the subsequent information in bytes.
+   * The length does not include the initial six bytes
+   * that contain the {@code attribute_name_index}
+   * and {@code attribute_length} items.
+   */
+  u4 attribute_length;
+
+  attribute_info() = default;
+
+  virtual ~attribute_info() = default;
+};
+
+struct ConstantValue_attribute : public attribute_info {
+  u2 constant_index;
+};
+
+struct exception_table_t {
+  u2 start_pc;
+  u2 end_pc;
+  u2 handler_pc;
+  u2 catch_type;
+};
+
+struct Code_attribute : public attribute_info {
+  u2 max_stack;
+  u2 max_locals;
+
+  u4 code_length;
+  u1 *code;
+
+  u2 exception_table_length;
+  exception_table_t *exception_table;
+
+  u2 attributes_count;
+  attribute_info **attributes;
+
+  Code_attribute();
+
+  ~Code_attribute() override;
+
+  void init(ClassFileStream &stream, cp_info **constant_pool);
+};
+
+struct StackMapTable_attribute : public attribute_info {
+  struct verification_type_info {
+    u1 tag;
+
+    virtual ~verification_type_info() = default;
+  };
+
+  struct Top_variable_info : public verification_type_info {
+  };
+
+  struct Integer_variable_info : public verification_type_info {
+  };
+
+  struct Float_variable_info : public verification_type_info {
+  };
+
+  struct Double_variable_info : public verification_type_info {
+  };
+
+  struct Long_variable_info : public verification_type_info {
+  };
+
+  struct Null_variable_info : public verification_type_info {
+  };
+
+  struct UninitializedThis_variable_info : public verification_type_info {
+  };
+
+  struct Object_variable_info : public verification_type_info {
+    u2 constant_pool_index;
+  };
+
+  struct Uninitialized_variable_info : public verification_type_info {
+    u2 offset;
+  };
+
+  // stack_map_frame
+  struct stack_map_frame {
+    u1 frame_type;
+
+    stack_map_frame() = default;
+
+    virtual ~stack_map_frame() = default;
+  };
+
+  /**
+   * Frame type: 0 - 63
+   */
+  struct same_frame : public stack_map_frame {
+  };
+
+  /**
+   * Frame type: 64 - 127
+   */
+  struct same_locals_1_stack_item_frame : public stack_map_frame {
+    verification_type_info *stack[1];
+
+    ~same_locals_1_stack_item_frame() override;
+  };
+
+  /**
+   * Frame type: 247
+   */
+  struct same_locals_1_stack_item_frame_extended : public stack_map_frame {
+    u2 offset_delta;
+    verification_type_info *stack[1];
+
+    ~same_locals_1_stack_item_frame_extended() override;
+  };
+
+  /**
+   * Frame type: 248 - 250
+   */
+  struct chop_frame : public stack_map_frame {
+    u2 offset_delta;
+  };
+
+  /**
+   * Frame type: 251
+   */
+  struct same_frame_extended : public stack_map_frame {
+    u2 offset_delta;
+
+  };
+
+  /**
+   * Frame type: 252-254
+   */
+  struct append_frame : public stack_map_frame {
+    u2 offset_delta;
     /**
-     * Attribute info
+     * Length: frame_type - 251
      */
-    struct attribute_info {
-        /**
-         * The value of the {@code attribute_name_index} must be
-         * a valid unsigned 16-bit index into the {@code constant_pool} of the class.
-         * The {@code constant_pool} entry at attribute_name_index must be
-         * a {@code CONSTANT_Utf8_info} structure (§4.4.7)
-         * representing the name of the attribute.
-         */
-        u2 attribute_name_index;
+    verification_type_info **locals;
 
-        /**
-         * The value of the {@code attribute_length} item indicates
-         * the length of the subsequent information in bytes.
-         * The length does not include the initial six bytes
-         * that contain the {@code attribute_name_index}
-         * and {@code attribute_length} items.
-         */
-        u4 attribute_length;
+    append_frame();
 
-        attribute_info() = default;
+    ~append_frame() override;
+  };
 
-        virtual ~attribute_info() = default;
-    };
+  /**
+   * Frame type: 255
+   */
+  struct full_frame : public stack_map_frame {
+    u2 offset_delta;
+    u2 number_of_locals;
+    verification_type_info **locals;
+    u2 number_of_stack_items;
+    verification_type_info **stack;
 
-    struct ConstantValue_attribute : public attribute_info {
-        u2 constant_index;
-    };
+    full_frame();
 
-    struct exception_table_t {
-        u2 start_pc;
-        u2 end_pc;
-        u2 handler_pc;
-        u2 catch_type;
-    };
-
-    struct Code_attribute : public attribute_info {
-        u2 max_stack;
-        u2 max_locals;
-
-        u4 code_length;
-        u1 *code;
-
-        u2 exception_table_length;
-        exception_table_t *exception_table;
-
-        u2 attributes_count;
-        attribute_info **attributes;
-
-        Code_attribute();
-
-        ~Code_attribute() override;
-
-        void init(ClassFileStream &stream, cp_info **constant_pool);
-    };
-
-    struct StackMapTable_attribute : public attribute_info {
-        struct verification_type_info {
-            u1 tag;
-
-            virtual ~verification_type_info() = default;
-        };
-
-        struct Top_variable_info : public verification_type_info {
-        };
-
-        struct Integer_variable_info : public verification_type_info {
-        };
-
-        struct Float_variable_info : public verification_type_info {
-        };
-
-        struct Double_variable_info : public verification_type_info {
-        };
-
-        struct Long_variable_info : public verification_type_info {
-        };
+    ~full_frame() override;
+  };
 
-        struct Null_variable_info : public verification_type_info {
-        };
+  u2 number_of_entries;
 
-        struct UninitializedThis_variable_info : public verification_type_info {
-        };
+  stack_map_frame **entries;
 
-        struct Object_variable_info : public verification_type_info {
-            u2 constant_pool_index;
-        };
-
-        struct Uninitialized_variable_info : public verification_type_info {
-            u2 offset;
-        };
+  StackMapTable_attribute();
 
-        // stack_map_frame
-        struct stack_map_frame {
-            u1 frame_type;
+  ~StackMapTable_attribute() override;
+};
 
-            stack_map_frame() = default;
+struct Exceptions_attribute : public attribute_info {
+  u2 number_of_exceptions;
 
-            virtual ~stack_map_frame() = default;
-        };
+  /**
+   * CONSTANT_Class_info
+   */
+  u2 *exception_index_table;
 
-        /**
-         * Frame type: 0 - 63
-         */
-        struct same_frame : public stack_map_frame {
-        };
-
-        /**
-         * Frame type: 64 - 127
-         */
-        struct same_locals_1_stack_item_frame : public stack_map_frame {
-            verification_type_info *stack[1];
-
-            ~same_locals_1_stack_item_frame() override;
-        };
-
-        /**
-         * Frame type: 247
-         */
-        struct same_locals_1_stack_item_frame_extended : public stack_map_frame {
-            u2 offset_delta;
-            verification_type_info *stack[1];
-
-            ~same_locals_1_stack_item_frame_extended() override;
-        };
-
-        /**
-         * Frame type: 248 - 250
-         */
-        struct chop_frame : public stack_map_frame {
-            u2 offset_delta;
-        };
-
-        /**
-         * Frame type: 251
-         */
-        struct same_frame_extended : public stack_map_frame {
-            u2 offset_delta;
-
-        };
-
-        /**
-         * Frame type: 252-254
-         */
-        struct append_frame : public stack_map_frame {
-            u2 offset_delta;
-            /**
-             * Length: frame_type - 251
-             */
-            verification_type_info **locals;
+  Exceptions_attribute();
 
-            append_frame();
+  ~Exceptions_attribute() override;
+};
 
-            ~append_frame() override;
-        };
+struct classes_t {
+  u2 inner_class_info_index;
+  u2 outer_class_info_index;
+  u2 inner_name_index;
+  u2 inner_class_access_flags;
+};
 
-        /**
-         * Frame type: 255
-         */
-        struct full_frame : public stack_map_frame {
-            u2 offset_delta;
-            u2 number_of_locals;
-            verification_type_info **locals;
-            u2 number_of_stack_items;
-            verification_type_info **stack;
+struct InnerClasses_attribute : public attribute_info {
+  u2 number_of_classes;
 
-            full_frame();
+  classes_t *classes;
 
-            ~full_frame() override;
-        };
+  InnerClasses_attribute();
 
-        u2 number_of_entries;
+  ~InnerClasses_attribute() override;
+};
 
-        stack_map_frame **entries;
+struct EnclosingMethod_attribute : public attribute_info {
+  u2 class_index;
+  u2 method_index;
+};
 
-        StackMapTable_attribute();
+struct Synthetic_attribute : public attribute_info {
+};
 
-        ~StackMapTable_attribute() override;
-    };
+struct Signature_attribute : public attribute_info {
+  u2 signature_index;
+};
 
-    struct Exceptions_attribute : public attribute_info {
-        u2 number_of_exceptions;
+struct SourceFile_attribute : public attribute_info {
+  u2 sourcefile_index;
+};
 
-        /**
-         * CONSTANT_Class_info
-         */
-        u2 *exception_index_table;
+struct SourceDebugExtension_attribute : public attribute_info {
+  /**
+   * Length: attribute_length
+   */
+  u1 *debug_extension;
 
-        Exceptions_attribute();
+  SourceDebugExtension_attribute();
 
-        ~Exceptions_attribute() override;
-    };
+  ~SourceDebugExtension_attribute() override;
+};
 
-    struct classes_t {
-        u2 inner_class_info_index;
-        u2 outer_class_info_index;
-        u2 inner_name_index;
-        u2 inner_class_access_flags;
-    };
+struct line_number_table_t {
+  u2 start_pc;
+  u2 line_number;
+};
 
-    struct InnerClasses_attribute : public attribute_info {
-        u2 number_of_classes;
+struct LineNumberTable_attribute : public attribute_info {
+  u2 line_number_table_length;
 
-        classes_t *classes;
+  line_number_table_t *line_number_table;
 
-        InnerClasses_attribute();
+  LineNumberTable_attribute();
 
-        ~InnerClasses_attribute() override;
-    };
+  ~LineNumberTable_attribute() override;
+};
 
-    struct EnclosingMethod_attribute : public attribute_info {
-        u2 class_index;
-        u2 method_index;
-    };
+struct local_variable_table_t {
+  u2 start_pc;
+  u2 length;
+  u2 name_index;
+  u2 descriptor_index;
+  u2 index;
+};
 
-    struct Synthetic_attribute : public attribute_info {
-    };
+struct LocalVariableTable_attribute : public attribute_info {
+  u2 local_variable_table_length;
 
-    struct Signature_attribute : public attribute_info {
-        u2 signature_index;
-    };
+  local_variable_table_t *local_variable_table;
 
-    struct SourceFile_attribute : public attribute_info {
-        u2 sourcefile_index;
-    };
+  LocalVariableTable_attribute();
 
-    struct SourceDebugExtension_attribute : public attribute_info {
-        /**
-         * Length: attribute_length
-         */
-        u1 *debug_extension;
+  ~LocalVariableTable_attribute() override;
+};
 
-        SourceDebugExtension_attribute();
+struct local_variable_type_table_t {
+  u2 start_pc;
+  u2 length;
+  u2 name_index;
+  u2 signature_index;
+  u2 index;
+};
 
-        ~SourceDebugExtension_attribute() override;
-    };
+struct LocalVariableTypeTable_attribute : public attribute_info {
+  u2 local_variable_type_table_length;
 
-    struct line_number_table_t {
-        u2 start_pc;
-        u2 line_number;
-    };
+  local_variable_type_table_t *local_variable_type_table;
 
-    struct LineNumberTable_attribute : public attribute_info {
-        u2 line_number_table_length;
+  LocalVariableTypeTable_attribute();
 
-        line_number_table_t *line_number_table;
+  ~LocalVariableTypeTable_attribute() override;
+};
 
-        LineNumberTable_attribute();
+struct Deprecated_attribute : public attribute_info {
+};
 
-        ~LineNumberTable_attribute() override;
-    };
+struct bootstrap_methods_t {
+  u2 bootstrap_method_ref;
+  u2 num_bootstrap_arguments;
+  u2 *bootstrap_arguments;
 
-    struct local_variable_table_t {
-        u2 start_pc;
-        u2 length;
-        u2 name_index;
-        u2 descriptor_index;
-        u2 index;
-    };
+  bootstrap_methods_t();
 
-    struct LocalVariableTable_attribute : public attribute_info {
-        u2 local_variable_table_length;
+  ~bootstrap_methods_t();
+};
 
-        local_variable_table_t *local_variable_table;
+struct BootstrapMethods_attribute : public attribute_info {
+  u2 num_bootstrap_methods;
 
-        LocalVariableTable_attribute();
+  bootstrap_methods_t *bootstrap_methods;
 
-        ~LocalVariableTable_attribute() override;
-    };
+  BootstrapMethods_attribute();
 
-    struct local_variable_type_table_t {
-        u2 start_pc;
-        u2 length;
-        u2 name_index;
-        u2 signature_index;
-        u2 index;
-    };
+  ~BootstrapMethods_attribute() override;
+};
 
-    struct LocalVariableTypeTable_attribute : public attribute_info {
-        u2 local_variable_type_table_length;
+struct parameters_t {
+  u2 name_index;
+  u2 access_flags;
+};
 
-        local_variable_type_table_t *local_variable_type_table;
+struct MethodParameters_attribute : public attribute_info {
+  u1 parameters_count;
 
-        LocalVariableTypeTable_attribute();
+  parameters_t *parameters;
 
-        ~LocalVariableTypeTable_attribute() override;
-    };
+  MethodParameters_attribute();
 
-    struct Deprecated_attribute : public attribute_info {
-    };
+  ~MethodParameters_attribute() override;
+};
 
-    struct bootstrap_methods_t {
-        u2 bootstrap_method_ref;
-        u2 num_bootstrap_arguments;
-        u2 *bootstrap_arguments;
+struct value_t {
+  virtual ~value_t() = default;
+};
 
-        bootstrap_methods_t();
+struct const_value_t : public value_t {
+  u2 const_value_index;
+};
 
-        ~bootstrap_methods_t();
-    };
+struct enum_const_value_t : public value_t {
+  u2 type_name_index;
+  u2 const_name_index;
+};
 
-    struct BootstrapMethods_attribute : public attribute_info {
-        u2 num_bootstrap_methods;
+struct class_info_t : public value_t {
+  u2 class_info_index;
+};
 
-        bootstrap_methods_t *bootstrap_methods;
+struct element_value {
+  u1 tag;
+  value_t *value = nullptr;
 
-        BootstrapMethods_attribute();
+  ~element_value();
+};
 
-        ~BootstrapMethods_attribute() override;
-    };
+struct element_value_pairs_t {
+  u2 element_name_index;
+  element_value value;
+};
 
-    struct parameters_t {
-        u2 name_index;
-        u2 access_flags;
-    };
+struct annotation : public value_t {
+  u2 type_index;
+  u2 num_element_value_pairs;
+  element_value_pairs_t *element_value_pairs = nullptr;
 
-    struct MethodParameters_attribute : public attribute_info {
-        u1 parameters_count;
+  ~annotation() override;
+};
 
-        parameters_t *parameters;
+struct array_value_t : public value_t {
+  u2 num_values;
+  element_value *values = nullptr;
 
-        MethodParameters_attribute();
+  ~array_value_t() override;
+};
 
-        ~MethodParameters_attribute() override;
-    };
+struct type_annotation {
+  // target_type
+  struct target_info_t {
+    virtual ~target_info_t() = default;
+  };
 
+  struct type_parameter_target : target_info_t {
+    u1 type_parameter_index;
+  };
 
-    struct value_t {
-        virtual ~value_t() = default;
-    };
+  struct supertype_target : target_info_t {
+    u2 supertype_index;
+  };
 
-    struct const_value_t : public value_t {
-        u2 const_value_index;
-    };
+  struct type_parameter_bound_target : target_info_t {
+    u1 type_parameter_index;
+    u1 bound_index;
+  };
 
-    struct enum_const_value_t : public value_t {
-        u2 type_name_index;
-        u2 const_name_index;
-    };
+  struct empty_target : target_info_t {
+  };
 
-    struct class_info_t : public value_t {
-        u2 class_info_index;
-    };
+  struct formal_parameter_target : target_info_t {
+    u1 formal_parameter_index;
+  };
 
-    struct element_value {
-        u1 tag;
-        value_t *value = nullptr;
+  struct throws_target : target_info_t {
+    u2 throws_type_index;
+  };
 
-        ~element_value();
-    };
+  struct table_t {
+    u2 start_pc;
+    u2 length;
+    u2 index;
+  };
 
-    struct element_value_pairs_t {
-        u2 element_name_index;
-        element_value value;
-    };
+  struct localvar_target : target_info_t {
+    u2 table_length;
+    table_t *table = nullptr;
 
-    struct annotation : public value_t {
-        u2 type_index;
-        u2 num_element_value_pairs;
-        element_value_pairs_t *element_value_pairs = nullptr;
+    ~localvar_target() override;
+  };
 
-        ~annotation() override;
-    };
+  struct catch_target : target_info_t {
+    u2 exception_table_index;
+  };
 
-    struct array_value_t : public value_t {
-        u2 num_values;
-        element_value *values = nullptr;
+  struct offset_target : target_info_t {
+    u2 offset;
+  };
 
-        ~array_value_t() override;
-    };
+  struct type_argument_target : target_info_t {
+    u2 offset;
+    u1 type_argument_index;
+  };
 
-    struct type_annotation {
-        // target_type
-        struct target_info_t {
-            virtual ~target_info_t() = default;
-        };
+  struct path_t {
+    u1 type_path_kind;
+    u1 type_argument_index;
+  };
 
-        struct type_parameter_target : target_info_t {
-            u1 type_parameter_index;
-        };
+  // type_path
+  struct type_path {
+    u1 path_length;
+    path_t *path = nullptr;
 
-        struct supertype_target : target_info_t {
-            u2 supertype_index;
-        };
+    ~type_path();
+  };
 
-        struct type_parameter_bound_target : target_info_t {
-            u1 type_parameter_index;
-            u1 bound_index;
-        };
+  // basic
+  u1 target_type;
+  target_info_t *target_info = nullptr;
+  type_path target_path;
+  annotation *annotations = nullptr;
 
-        struct empty_target : target_info_t {
-        };
+  ~type_annotation();
+};
 
-        struct formal_parameter_target : target_info_t {
-            u1 formal_parameter_index;
-        };
+struct parameter_annotations_t {
+  u2 num_annotations;
+  annotation *annotations = nullptr;
 
-        struct throws_target : target_info_t {
-            u2 throws_type_index;
-        };
+  ~parameter_annotations_t();
+};
 
-        struct table_t {
-            u2 start_pc;
-            u2 length;
-            u2 index;
-        };
+struct RuntimeVisibleAnnotations_attribute : public attribute_info {
+  parameter_annotations_t parameter_annotations;
+};
 
-        struct localvar_target : target_info_t {
-            u2 table_length;
-            table_t *table = nullptr;
+struct RuntimeInvisibleAnnotations_attribute : public attribute_info {
+  parameter_annotations_t parameter_annotations;
+};
 
-            ~localvar_target() override;
-        };
+struct RuntimeVisibleParameterAnnotations_attribute : public attribute_info {
+  u1 num_parameters;
+  parameter_annotations_t *parameter_annotations = nullptr;
 
-        struct catch_target : target_info_t {
-            u2 exception_table_index;
-        };
+  ~RuntimeVisibleParameterAnnotations_attribute() override;
+};
 
-        struct offset_target : target_info_t {
-            u2 offset;
-        };
+struct RuntimeInvisibleParameterAnnotations_attribute : public attribute_info {
+  u1 num_parameters;
+  parameter_annotations_t *parameter_annotations = nullptr;
 
-        struct type_argument_target : target_info_t {
-            u2 offset;
-            u1 type_argument_index;
-        };
+  ~RuntimeInvisibleParameterAnnotations_attribute() override;
+};
 
-        struct path_t {
-            u1 type_path_kind;
-            u1 type_argument_index;
-        };
+struct RuntimeVisibleTypeAnnotations_attribute : public attribute_info {
+  u2 num_annotations;
+  type_annotation *annotations = nullptr;
 
-        // type_path
-        struct type_path {
-            u1 path_length;
-            path_t *path = nullptr;
+  ~RuntimeVisibleTypeAnnotations_attribute() override;
+};
 
-            ~type_path();
-        };
+struct RuntimeInvisibleTypeAnnotations_attribute : public attribute_info {
+  u2 num_annotations;
+  type_annotation *annotations = nullptr;
 
-        // basic
-        u1 target_type;
-        target_info_t *target_info = nullptr;
-        type_path target_path;
-        annotation *annotations = nullptr;
+  ~RuntimeInvisibleTypeAnnotations_attribute() override;
+};
 
-        ~type_annotation();
-    };
+struct AnnotationDefault_attribute : public attribute_info {
+  element_value default_value;
+};
 
-    struct parameter_annotations_t {
-        u2 num_annotations;
-        annotation *annotations = nullptr;
+class AttributeParser {
+ public:
+  static void readAttributes(attribute_info ***p, u2 count,
+                             ClassFileStream &stream, cp_info **constant_pool);
 
-        ~parameter_annotations_t();
-    };
+  static void deallocAttributes(attribute_info ***p, u2 count);
 
-    struct RuntimeVisibleAnnotations_attribute : public attribute_info {
-        parameter_annotations_t parameter_annotations;
-    };
+  static u2 toAttributeTag(u2 attribute_name_index, cp_info **constant_pool);
 
-    struct RuntimeInvisibleAnnotations_attribute : public attribute_info {
-        parameter_annotations_t parameter_annotations;
-    };
-
-    struct RuntimeVisibleParameterAnnotations_attribute : public attribute_info {
-        u1 num_parameters;
-        parameter_annotations_t *parameter_annotations = nullptr;
-
-        ~RuntimeVisibleParameterAnnotations_attribute() override;
-    };
-
-    struct RuntimeInvisibleParameterAnnotations_attribute : public attribute_info {
-        u1 num_parameters;
-        parameter_annotations_t *parameter_annotations = nullptr;
-
-        ~RuntimeInvisibleParameterAnnotations_attribute() override;
-    };
-
-    struct RuntimeVisibleTypeAnnotations_attribute : public attribute_info {
-        u2 num_annotations;
-        type_annotation *annotations = nullptr;
-
-        ~RuntimeVisibleTypeAnnotations_attribute() override;
-    };
-
-    struct RuntimeInvisibleTypeAnnotations_attribute : public attribute_info {
-        u2 num_annotations;
-        type_annotation *annotations = nullptr;
-
-        ~RuntimeInvisibleTypeAnnotations_attribute() override;
-    };
-
-    struct AnnotationDefault_attribute : public attribute_info {
-        element_value default_value;
-    };
-
-    class AttributeParser {
-    public:
-        static void readAttributes(attribute_info ***p, u2 count,
-                                   ClassFileStream &stream, cp_info **constant_pool);
-
-        static void deallocAttributes(attribute_info ***p, u2 count);
-
-        static u2 toAttributeTag(u2 attribute_name_index, cp_info **constant_pool);
-
-        static attribute_info *parseAttribute(ClassFileStream &stream, cp_info **constant_pool);
-    };
+  static attribute_info *parseAttribute(ClassFileStream &stream, cp_info **constant_pool);
+};
 }

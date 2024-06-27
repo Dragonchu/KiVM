@@ -8,119 +8,119 @@
 #include <list>
 
 namespace kivm {
-    class Klass;
+class Klass;
 
-    class InstanceKlass;
+class InstanceKlass;
 
-    class field_info;
+class field_info;
 
-    class cp_info;
+class cp_info;
 
-    class ConstantValue_attribute;
+class ConstantValue_attribute;
 
-    class Field {
-        friend InstanceKlass;
+class Field {
+  friend InstanceKlass;
 
-    public:
-        static bool isSame(const Field *lhs, const Field *rhs);
+ public:
+  static bool isSame(const Field *lhs, const Field *rhs);
 
-        static String makeIdentity(InstanceKlass *belongTo, const Field *f);
+  static String makeIdentity(InstanceKlass *belongTo, const Field *f);
 
-    private:
-        InstanceKlass *_klass = nullptr;
-        String _name;
-        String _descriptor;
-        String _signature;
-        u2 _accessFlag;
+ private:
+  InstanceKlass *_klass = nullptr;
+  String _name;
+  String _descriptor;
+  String _signature;
+  u2 _accessFlag;
 
-        ValueType _valueType;
+  ValueType _valueType;
 
-        /**
-         * Only available when _value_type is OBJECT or ARRAY
-         */
-        Klass *_valueClassType = nullptr;
-        String _valueClassTypeName;
+  /**
+   * Only available when _value_type is OBJECT or ARRAY
+   */
+  Klass *_valueClassType = nullptr;
+  String _valueClassTypeName;
 
-        field_info *_fieldInfo = nullptr;
-        ConstantValue_attribute *_constantAttr = nullptr;
+  field_info *_fieldInfo = nullptr;
+  ConstantValue_attribute *_constantAttr = nullptr;
 
-        bool _linked;
+  bool _linked;
 
-        void linkAttributes(cp_info **pool);
+  void linkAttributes(cp_info **pool);
 
-        void postLinkValueType();
+  void postLinkValueType();
 
-    public:
-        Field(InstanceKlass *clazz, field_info *fieldInfo);
+ public:
+  Field(InstanceKlass *clazz, field_info *fieldInfo);
 
-        void linkField(cp_info **pool);
+  void linkField(cp_info **pool);
 
-        InstanceKlass *getClass() const {
-            return _klass;
-        }
+  InstanceKlass *getClass() const {
+    return _klass;
+  }
 
-        Klass *getValueTypeClass();
+  Klass *getValueTypeClass();
 
-        const String &getName() const {
-            return _name;
-        }
+  const String &getName() const {
+    return _name;
+  }
 
-        const String &getDescriptor() const {
-            return _descriptor;
-        }
+  const String &getDescriptor() const {
+    return _descriptor;
+  }
 
-        const String &getSignature() const {
-            return _signature;
-        }
+  const String &getSignature() const {
+    return _signature;
+  }
 
-        ConstantValue_attribute *getConstantAttribute() const {
-            return _constantAttr;
-        }
+  ConstantValue_attribute *getConstantAttribute() const {
+    return _constantAttr;
+  }
 
-        u2 getAccessFlag() const {
-            return _accessFlag;
-        }
+  u2 getAccessFlag() const {
+    return _accessFlag;
+  }
 
-        ValueType getValueType() const {
-            return _valueType;
-        }
+  ValueType getValueType() const {
+    return _valueType;
+  }
 
-        bool isLinked() const {
-            return _linked;
-        }
+  bool isLinked() const {
+    return _linked;
+  }
 
-        bool isPublic() const {
-            return (getAccessFlag() & ACC_PUBLIC) == ACC_PUBLIC;
-        }
+  bool isPublic() const {
+    return (getAccessFlag() & ACC_PUBLIC) == ACC_PUBLIC;
+  }
 
-        bool isPrivate() const {
-            return (getAccessFlag() & ACC_PRIVATE) == ACC_PRIVATE;
-        }
+  bool isPrivate() const {
+    return (getAccessFlag() & ACC_PRIVATE) == ACC_PRIVATE;
+  }
 
-        bool isProtected() const {
-            return (getAccessFlag() & ACC_PROTECTED) == ACC_PROTECTED;
-        }
+  bool isProtected() const {
+    return (getAccessFlag() & ACC_PROTECTED) == ACC_PROTECTED;
+  }
 
-        bool isFinal() const {
-            return (getAccessFlag() & ACC_FINAL) == ACC_FINAL;
-        }
+  bool isFinal() const {
+    return (getAccessFlag() & ACC_FINAL) == ACC_FINAL;
+  }
 
-        bool isStatic() {
-            return (getAccessFlag() & ACC_STATIC) == ACC_STATIC;
-        }
+  bool isStatic() {
+    return (getAccessFlag() & ACC_STATIC) == ACC_STATIC;
+  }
 
-        bool isVolatile() const {
-            return (getAccessFlag() & ACC_VOLATILE) == ACC_VOLATILE;
-        }
-    };
+  bool isVolatile() const {
+    return (getAccessFlag() & ACC_VOLATILE) == ACC_VOLATILE;
+  }
+};
 
-    class FieldPool {
-    private:
-        static std::list<Field *> &getEntriesInternal();
+class FieldPool {
+ private:
+  static std::list<Field *> &getEntriesInternal();
 
-    public:
-        static void add(Field *method);
+ public:
+  static void add(Field *method);
 
-        static const std::list<Field *> &getEntries();
-    };
+  static const std::list<Field *> &getEntries();
+};
 }

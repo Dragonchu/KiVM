@@ -14,42 +14,42 @@
 #include <dlfcn.h>
 
 namespace kivm {
-    namespace dl {
-        UnixDLInterface::UnixDLInterface() : handler(nullptr) {
-        }
+namespace dl {
+UnixDLInterface::UnixDLInterface() : handler(nullptr) {
+}
 
-        UnixDLInterface::UnixDLInterface(const std::string &file) : handler(nullptr) {
-            open(file);
-        }
+UnixDLInterface::UnixDLInterface(const std::string &file) : handler(nullptr) {
+  open(file);
+}
 
-        UnixDLInterface::~UnixDLInterface() {
-            close();
-        }
+UnixDLInterface::~UnixDLInterface() {
+  close();
+}
 
-        bool UnixDLInterface::open(const std::string &file) {
-            DLHandler handler = ::dlopen(file.c_str(), RTLD_LAZY);
-            this->handler = handler;
-            return this->handler != nullptr;
-        }
+bool UnixDLInterface::open(const std::string &file) {
+  DLHandler handler = ::dlopen(file.c_str(), RTLD_LAZY);
+  this->handler = handler;
+  return this->handler != nullptr;
+}
 
-        DLSymbol UnixDLInterface::findSymbol(const std::string &symbolName) const {
-            // Clear errors
-            (void) ::dlerror();
+DLSymbol UnixDLInterface::findSymbol(const std::string &symbolName) const {
+  // Clear errors
+  (void) ::dlerror();
 
-            DLSymbol sym = dlsym(handler != nullptr ? handler : RTLD_DEFAULT, symbolName.c_str());
-            if (::dlerror() == nullptr) {
-                return sym;
-            }
-            return nullptr;
-        }
+  DLSymbol sym = dlsym(handler != nullptr ? handler : RTLD_DEFAULT, symbolName.c_str());
+  if (::dlerror() == nullptr) {
+    return sym;
+  }
+  return nullptr;
+}
 
-        void UnixDLInterface::close() {
-            if (handler != nullptr) {
-                ::dlclose(handler);
-                handler = nullptr;
-            }
-        }
-    }
+void UnixDLInterface::close() {
+  if (handler != nullptr) {
+    ::dlclose(handler);
+    handler = nullptr;
+  }
+}
+}
 }
 
 #endif

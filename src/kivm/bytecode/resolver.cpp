@@ -10,83 +10,83 @@
 #include <kivm/memory/universe.h>
 
 namespace kivm {
-    oop Resolver::javaOop(jobject obj) {
-        if (obj != nullptr && Universe::isHeapObject(obj)) {
-            return (oop) obj;
-        }
-        return nullptr;
-    }
+oop Resolver::javaOop(jobject obj) {
+  if (obj != nullptr && Universe::isHeapObject(obj)) {
+    return (oop) obj;
+  }
+  return nullptr;
+}
 
-    instanceOop Resolver::instance(jobject obj) {
-        auto n = javaOop(obj);
-        if (n == nullptr) {
-            return nullptr;
-        }
+instanceOop Resolver::instance(jobject obj) {
+  auto n = javaOop(obj);
+  if (n == nullptr) {
+    return nullptr;
+  }
 
-        if (n->getClass()->getClassType() == ClassType::INSTANCE_CLASS) {
-            return (instanceOop) n;
-        }
-        return nullptr;
-    }
+  if (n->getClass()->getClassType() == ClassType::INSTANCE_CLASS) {
+    return (instanceOop) n;
+  }
+  return nullptr;
+}
 
-    mirrorOop Resolver::mirror(jobject obj) {
-        auto n = instance(obj);
-        return (mirrorOop) n;
-    }
+mirrorOop Resolver::mirror(jobject obj) {
+  auto n = instance(obj);
+  return (mirrorOop) n;
+}
 
-    arrayOop Resolver::array(jarray obj) {
-        auto n = javaOop(obj);
-        if (n == nullptr) {
-            return nullptr;
-        }
+arrayOop Resolver::array(jarray obj) {
+  auto n = javaOop(obj);
+  if (n == nullptr) {
+    return nullptr;
+  }
 
-        if (n->getClass()->getClassType() == ClassType::OBJECT_ARRAY_CLASS
-            || n->getClass()->getClassType() == ClassType::TYPE_ARRAY_CLASS) {
-            return (arrayOop) n;
-        }
-        return nullptr;
-    }
+  if (n->getClass()->getClassType() == ClassType::OBJECT_ARRAY_CLASS
+      || n->getClass()->getClassType() == ClassType::TYPE_ARRAY_CLASS) {
+    return (arrayOop) n;
+  }
+  return nullptr;
+}
 
-    typeArrayOop Resolver::typeArray(jarray obj) {
-        auto n = javaOop(obj);
-        if (n == nullptr) {
-            return nullptr;
-        }
+typeArrayOop Resolver::typeArray(jarray obj) {
+  auto n = javaOop(obj);
+  if (n == nullptr) {
+    return nullptr;
+  }
 
-        if (n->getClass()->getClassType() == ClassType::TYPE_ARRAY_CLASS) {
-            return (typeArrayOop) n;
-        }
-        return nullptr;
-    }
+  if (n->getClass()->getClassType() == ClassType::TYPE_ARRAY_CLASS) {
+    return (typeArrayOop) n;
+  }
+  return nullptr;
+}
 
-    objectArrayOop Resolver::objectArray(jobjectArray obj) {
-        auto n = javaOop(obj);
-        if (n == nullptr) {
-            return nullptr;
-        }
+objectArrayOop Resolver::objectArray(jobjectArray obj) {
+  auto n = javaOop(obj);
+  if (n == nullptr) {
+    return nullptr;
+  }
 
-        if (n->getClass()->getClassType() == ClassType::OBJECT_ARRAY_CLASS) {
-            return (objectArrayOop) n;
-        }
-        return nullptr;
-    }
+  if (n->getClass()->getClassType() == ClassType::OBJECT_ARRAY_CLASS) {
+    return (objectArrayOop) n;
+  }
+  return nullptr;
+}
 
-    Klass *Resolver::javaClass(jclass clazz) {
-        if (clazz != nullptr) {
-            return (Klass *) clazz;
-        }
-        return nullptr;
-    }
+Klass *Resolver::javaClass(jclass clazz) {
+  if (clazz != nullptr) {
+    return (Klass *) clazz;
+  }
+  return nullptr;
+}
 
-    InstanceKlass *Resolver::instanceClass(jclass clazz) {
-        auto klass = Resolver::javaClass(clazz);
-        if (klass == nullptr) {
-            return nullptr;
-        }
+InstanceKlass *Resolver::instanceClass(jclass clazz) {
+  auto klass = Resolver::javaClass(clazz);
+  if (klass == nullptr) {
+    return nullptr;
+  }
 
-        if (klass->getClassType() == ClassType::INSTANCE_CLASS) {
-            return (InstanceKlass *) klass;
-        }
-        return nullptr;
-    }
+  if (klass->getClassType() == ClassType::INSTANCE_CLASS) {
+    return (InstanceKlass *) klass;
+  }
+  return nullptr;
+}
 }

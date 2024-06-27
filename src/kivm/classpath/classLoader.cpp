@@ -9,83 +9,83 @@
 #include <shared/lock.h>
 
 namespace kivm {
-    static RecursiveLock &bootstrapLock() {
-        static RecursiveLock lock;
-        return lock;
+static RecursiveLock &bootstrapLock() {
+  static RecursiveLock lock;
+  return lock;
+}
+
+Klass *ClassLoader::requireClass(ClassLoader *classLoader, const String &className) {
+  if (classLoader == nullptr) {
+    // This is a bootstrap class
+    classLoader = BootstrapClassLoader::get();
+  }
+
+  Klass *loadedClass = classLoader == nullptr
+                       ? nullptr
+                       : classLoader->loadClass(className);
+  if (loadedClass == nullptr) {
+    // TODO: throw LinkageError
+    PANIC("LinkageError");
+  }
+  return loadedClass;
+}
+
+ClassLoader *ClassLoader::getCurrentClassLoader() {
+  // TODO: support user-defined class loader
+  return BootstrapClassLoader::get();
+}
+
+BootstrapClassLoader *BootstrapClassLoader::get() {
+  static BootstrapClassLoader classLoader;
+  return &classLoader;
+}
+
+Klass *BootstrapClassLoader::loadClass(const String &className) {
+  RecursiveLockGuard guard(bootstrapLock());
+
+  // check whether class is already loaded
+  auto iter = SystemDictionary::get()->find(className);
+  if (iter != nullptr) {
+    return iter;
+  }
+  if (className.substr(0, 3) == L"com") {
+    EXPLORE("Class is not loaded %S", className.c_str());
+    EXPLORE("Let's find it");
+  }
+
+  // OK, let's find it!
+  auto *klass = BaseClassLoader::loadClass(className);
+  if (klass != nullptr) {
+    SystemDictionary::get()->put(className, klass);
+    klass->setClassState(ClassState::LOADED);
+    if (className.substr(0, 3) == L"com") {
+      EXPLORE("Class state now is LOADED %S", className.c_str());
+      EXPLORE("Linking class %S", className.c_str());
     }
-
-    Klass *ClassLoader::requireClass(ClassLoader *classLoader, const String &className) {
-        if (classLoader == nullptr) {
-            // This is a bootstrap class
-            classLoader = BootstrapClassLoader::get();
-        }
-
-        Klass *loadedClass = classLoader == nullptr
-                             ? nullptr
-                             : classLoader->loadClass(className);
-        if (loadedClass == nullptr) {
-            // TODO: throw LinkageError
-            PANIC("LinkageError");
-        }
-        return loadedClass;
+    klass->linkClass();
+    if (className.substr(0, 3) == L"com") {
+      EXPLORE("Class state now is LINKED %S", className.c_str());
     }
+  }
+  return klass;
+}
 
-    ClassLoader *ClassLoader::getCurrentClassLoader() {
-        // TODO: support user-defined class loader
-        return BootstrapClassLoader::get();
-    }
+Klass *BootstrapClassLoader::loadClass(u1 *classBytes, size_t classSize) {
+  RecursiveLockGuard guard(bootstrapLock());
+  Klass *klass = BaseClassLoader::loadClass(classBytes, classSize);
+  if (klass == nullptr) {
+    return nullptr;
+  }
 
-    BootstrapClassLoader *BootstrapClassLoader::get() {
-        static BootstrapClassLoader classLoader;
-        return &classLoader;
-    }
+  auto iter = SystemDictionary::get()->find(klass->getName());
+  if (iter != nullptr) {
+    delete klass;
+    return iter;
+  }
 
-    Klass *BootstrapClassLoader::loadClass(const String &className) {
-        RecursiveLockGuard guard(bootstrapLock());
-
-        // check whether class is already loaded
-        auto iter = SystemDictionary::get()->find(className);
-        if (iter != nullptr) {
-            return iter;
-        }
-        if (className.substr(0, 3) == L"com") {
-            EXPLORE("Class is not loaded %S", className.c_str());
-            EXPLORE("Let's find it");
-        }
-
-        // OK, let's find it!
-        auto *klass = BaseClassLoader::loadClass(className);
-        if (klass != nullptr) {
-            SystemDictionary::get()->put(className, klass);
-            klass->setClassState(ClassState::LOADED);
-            if (className.substr(0, 3) == L"com") {
-                EXPLORE("Class state now is LOADED %S", className.c_str());
-                EXPLORE("Linking class %S", className.c_str());
-            }
-            klass->linkClass();
-            if (className.substr(0, 3) == L"com") {
-                EXPLORE("Class state now is LINKED %S", className.c_str());
-            }
-        }
-        return klass;
-    }
-
-    Klass *BootstrapClassLoader::loadClass(u1 *classBytes, size_t classSize) {
-        RecursiveLockGuard guard(bootstrapLock());
-        Klass *klass = BaseClassLoader::loadClass(classBytes, classSize);
-        if (klass == nullptr) {
-            return nullptr;
-        }
-
-        auto iter = SystemDictionary::get()->find(klass->getName());
-        if (iter != nullptr) {
-            delete klass;
-            return iter;
-        }
-
-        SystemDictionary::get()->put(klass->getName(), klass);
-        klass->setClassState(ClassState::LOADED);
-        klass->linkClass();
-        return klass;
-    }
+  SystemDictionary::get()->put(klass->getName(), klass);
+  klass->setClassState(ClassState::LOADED);
+  klass->linkClass();
+  return klass;
+}
 }

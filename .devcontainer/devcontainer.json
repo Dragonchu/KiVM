@@ -1,12 +1,12 @@
 {
-	"name": "C++",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
-	"features": {
-		"ghcr.io/ebaskoro/devcontainer-features/sdkman:1": {
-			"candidate": "java",
-			"version": "8.0.412-amzn"
-		}
-	}
+  "name": "C++",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/ebaskoro/devcontainer-features/sdkman:1": {
+      "candidate": "java",
+      "version": "8.0.412-amzn"
+    }
+  }
 }

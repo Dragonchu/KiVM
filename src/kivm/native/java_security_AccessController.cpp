@@ -12,35 +12,35 @@ using namespace kivm;
 JAVA_NATIVE jobject Java_java_security_AccessController_doPrivileged(JNIEnv *env,
                                                                      jclass java_security_AccessController,
                                                                      jobject javaPrivilegedExceptionAction) {
-    auto actionOop = Resolver::instance(javaPrivilegedExceptionAction);
-    if (actionOop == nullptr) {
-        auto thread = Threads::currentThread();
-        assert(thread != nullptr);
-        thread->throwException(Global::_NullPointerException, false);
-        return nullptr;
-    }
+  auto actionOop = Resolver::instance(javaPrivilegedExceptionAction);
+  if (actionOop == nullptr) {
+    auto thread = Threads::currentThread();
+    assert(thread != nullptr);
+    thread->throwException(Global::_NullPointerException, false);
+    return nullptr;
+  }
 
-    // there are many versions of doPrivileged().
-    // but we can do the simplest one
-    auto actionClass = (InstanceKlass *) actionOop->getClass();
-    auto run = actionClass->getVirtualMethod(L"run", L"()Ljava/lang/Object;");
-    if (run == nullptr) {
-        PANIC("no run() method found");
-        return nullptr;
-    }
+  // there are many versions of doPrivileged().
+  // but we can do the simplest one
+  auto actionClass = (InstanceKlass *) actionOop->getClass();
+  auto run = actionClass->getVirtualMethod(L"run", L"()Ljava/lang/Object;");
+  if (run == nullptr) {
+    PANIC("no run() method found");
+    return nullptr;
+  }
 
-    auto currentThread = Threads::currentThread();
-    if (currentThread == nullptr) {
-        PANIC("currentThread cannot be null");
-    }
+  auto currentThread = Threads::currentThread();
+  if (currentThread == nullptr) {
+    PANIC("currentThread cannot be null");
+  }
 
-    D("native: AccessController.doPrivileged(): performing privileged actions");
-    oop result = JavaCall::withArgs(currentThread, run, {actionOop});
+  D("native: AccessController.doPrivileged(): performing privileged actions");
+  oop result = JavaCall::withArgs(currentThread, run, {actionOop});
 
-    return result;
+  return result;
 }
 
 JAVA_NATIVE jobject Java_java_security_AccessController_getStackAccessControlContext(JNIEnv *env,
                                                                                      jclass java_security_AccessController) {
-    return nullptr;
+  return nullptr;
 }

@@ -7,45 +7,45 @@
 #include <list>
 
 namespace kivm {
-    enum ClassSource {
-        NOT_FOUND,
-        DIR,
-        JAR
-    };
+enum ClassSource {
+  NOT_FOUND,
+  DIR,
+  JAR
+};
 
-    struct ClassSearchResult final {
-        String _file;
-        int _fd{};
-        ClassSource _source;
-        u1 *_buffer = nullptr;
-        size_t _bufferSize{};
+struct ClassSearchResult final {
+  String _file;
+  int _fd{};
+  ClassSource _source;
+  u1 *_buffer = nullptr;
+  size_t _bufferSize{};
 
-        ClassSearchResult(const String &file, int fd, ClassSource source, u1 *buffer, size_t bufferSize);
+  ClassSearchResult(const String &file, int fd, ClassSource source, u1 *buffer, size_t bufferSize);
 
-        void closeResource() const;
-    };
+  void closeResource() const;
+};
 
-    struct ClassPathEntry final {
-        ClassSource _source;
-        String _path;
-        void *_cookie;
-    };
+struct ClassPathEntry final {
+  ClassSource _source;
+  String _path;
+  void *_cookie;
+};
 
-    class ClassPathManager final {
-    private:
-        std::list<ClassPathEntry> _runtimeClassPath;
+class ClassPathManager final {
+ private:
+  std::list<ClassPathEntry> _runtimeClassPath;
 
-    public:
-        static void initialize();
+ public:
+  static void initialize();
 
-        static ClassPathManager *get();
+  static ClassPathManager *get();
 
-        void addClassPath(const String &path);
+  void addClassPath(const String &path);
 
-        void addClassPaths(const String &classpath);
+  void addClassPaths(const String &classpath);
 
-        ClassSearchResult searchClass(const String &className);
+  ClassSearchResult searchClass(const String &className);
 
-        void destroy();
-    };
+  void destroy();
+};
 }

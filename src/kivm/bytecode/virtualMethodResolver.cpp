@@ -5,19 +5,19 @@
 #include <kivm/bytecode/javaCall.h>
 
 namespace kivm {
-    Method *JavaCall::resolveVirtualMethod(oop thisObject, Method *tagMethod) {
-        auto thisClass = thisObject->getClass();
-        Method *resolved = nullptr;
+Method *JavaCall::resolveVirtualMethod(oop thisObject, Method *tagMethod) {
+  auto thisClass = thisObject->getClass();
+  Method *resolved = nullptr;
 
-        if (thisClass->getClassType() == ClassType::INSTANCE_CLASS) {
-            auto instanceClass = (InstanceKlass *) thisClass;
-            resolved = instanceClass->getVirtualMethod(tagMethod->getName(), tagMethod->getDescriptor());
-        } else if (thisClass->getClassType() == ClassType::OBJECT_ARRAY_CLASS
-                   || thisClass->getClassType() == ClassType::TYPE_ARRAY_CLASS) {
-            resolved = tagMethod;
-        } else {
-            SHOULD_NOT_REACH_HERE();
-        }
-        return resolved;
-    }
+  if (thisClass->getClassType() == ClassType::INSTANCE_CLASS) {
+    auto instanceClass = (InstanceKlass *) thisClass;
+    resolved = instanceClass->getVirtualMethod(tagMethod->getName(), tagMethod->getDescriptor());
+  } else if (thisClass->getClassType() == ClassType::OBJECT_ARRAY_CLASS
+      || thisClass->getClassType() == ClassType::TYPE_ARRAY_CLASS) {
+    resolved = tagMethod;
+  } else {
+    SHOULD_NOT_REACH_HERE();
+  }
+  return resolved;
+}
 }

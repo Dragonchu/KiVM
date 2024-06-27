@@ -9,19 +9,19 @@
 
 namespace kivm {
 
-    namespace strings {
-        using String  = std::wstring;
+namespace strings {
+using String = std::wstring;
 
-        String fromBytes(u1 *bytes, size_t length);
+String fromBytes(u1 *bytes, size_t length);
 
-        String fromStdString(const std::string &str);
+String fromStdString(const std::string &str);
 
-        String replaceAll(const String &string, const String &oldValue, const String &newValue);
+String replaceAll(const String &string, const String &oldValue, const String &newValue);
 
-        std::string toStdString(const String &str);
+std::string toStdString(const String &str);
 
-        std::vector<String> split(const String &string, const String &delimiter);
-    }
+std::vector<String> split(const String &string, const String &delimiter);
+}
 
-    using String = strings::String;
+using String = strings::String;
 }

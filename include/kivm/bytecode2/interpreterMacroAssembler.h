@@ -4,8 +4,8 @@
 #pragma once
 
 namespace kivm {
-    class InterpreterMacroAssembler {
-    public:
-        void flush();
-    };
+class InterpreterMacroAssembler {
+ public:
+  void flush();
+};
 }

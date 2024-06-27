@@ -34,29 +34,29 @@
 #endif
 
 namespace kivm {
-    void ByteCodeInterpreter::initialize() {
-        // do nothing
-    }
+void ByteCodeInterpreter::initialize() {
+  // do nothing
+}
 
-    oop ByteCodeInterpreter::interp(JavaThread *thread) {
-        Frame *currentFrame = thread->getCurrentFrame();
-        auto currentMethod = currentFrame->getMethod();
-        auto currentClass = currentMethod->getClass();
-        const CodeBlob &codeBlob = currentMethod->getCodeBlob();
-        u4 &pc = thread->_pc;
+oop ByteCodeInterpreter::interp(JavaThread *thread) {
+  Frame *currentFrame = thread->getCurrentFrame();
+  auto currentMethod = currentFrame->getMethod();
+  auto currentClass = currentMethod->getClass();
+  const CodeBlob &codeBlob = currentMethod->getCodeBlob();
+  u4 &pc = thread->_pc;
 
-        D("currentMethod: %S.%S:%S",
-            (currentClass->getName()).c_str(),
-            (currentMethod->getName()).c_str(),
-            (currentMethod->getDescriptor()).c_str());
+  D("currentMethod: %S.%S:%S",
+    (currentClass->getName()).c_str(),
+    (currentMethod->getName()).c_str(),
+    (currentMethod->getDescriptor()).c_str());
 
-        Stack &stack = currentFrame->getStack();
-        Locals &locals = currentFrame->getLocals();
+  Stack &stack = currentFrame->getStack();
+  Locals &locals = currentFrame->getLocals();
 
-        thread->enterSafepointIfNeeded();
+  thread->enterSafepointIfNeeded();
 
 #include "instruction.cpp-inc"
 
-        return nullptr;
-    }
+  return nullptr;
+}
 }

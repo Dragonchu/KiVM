@@ -9,8 +9,8 @@
 #include <unordered_map>
 
 namespace kivm {
-    template<typename K, typename V>
-    using HashMap = std::unordered_map<K, V>;
+template<typename K, typename V>
+using HashMap = std::unordered_map<K, V>;
 }
 
 #else

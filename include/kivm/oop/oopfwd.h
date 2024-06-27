@@ -4,58 +4,58 @@
 #pragma once
 
 namespace kivm {
-    enum oopType {
-        INSTANCE_OOP,
-        PRIMITIVE_OOP,
-        OBJECT_ARRAY_OOP,
-        TYPE_ARRAY_OOP,
-    };
+enum oopType {
+  INSTANCE_OOP,
+  PRIMITIVE_OOP,
+  OBJECT_ARRAY_OOP,
+  TYPE_ARRAY_OOP,
+};
 
-    enum ValueType {
-        VOID,
-        BYTE,
-        BOOLEAN,
-        CHAR,
-        SHORT,
-        INT,
-        FLOAT,
-        LONG,
-        DOUBLE,
-        OBJECT,
-        ARRAY,
-    };
+enum ValueType {
+  VOID,
+  BYTE,
+  BOOLEAN,
+  CHAR,
+  SHORT,
+  INT,
+  FLOAT,
+  LONG,
+  DOUBLE,
+  OBJECT,
+  ARRAY,
+};
 
-    class markOopDesc;
+class markOopDesc;
 
-    class oopDesc;
+class oopDesc;
 
-    class instanceOopDesc;
+class instanceOopDesc;
 
-    class mirrorOopDesc;
+class mirrorOopDesc;
 
-    class arrayOopDesc;
+class arrayOopDesc;
 
-    class typeArrayOopDesc;
+class typeArrayOopDesc;
 
-    class objectArrayOopDesc;
+class objectArrayOopDesc;
 
-    class intOopDesc;
+class intOopDesc;
 
-    class longOopDesc;
+class longOopDesc;
 
-    class floatOopDesc;
+class floatOopDesc;
 
-    class doubleOopDesc;
+class doubleOopDesc;
 
-    using markOop = markOopDesc *;
-    using oop = oopDesc *;
-    using instanceOop = instanceOopDesc *;
-    using mirrorOop = mirrorOopDesc *;
-    using arrayOop= arrayOopDesc *;
-    using typeArrayOop= typeArrayOopDesc *;
-    using objectArrayOop= objectArrayOopDesc *;
-    using intOop = intOopDesc *;
-    using longOop= longOopDesc *;
-    using floatOop = floatOopDesc *;
-    using doubleOop = doubleOopDesc *;
+using markOop = markOopDesc *;
+using oop = oopDesc *;
+using instanceOop = instanceOopDesc *;
+using mirrorOop = mirrorOopDesc *;
+using arrayOop = arrayOopDesc *;
+using typeArrayOop = typeArrayOopDesc *;
+using objectArrayOop = objectArrayOopDesc *;
+using intOop = intOopDesc *;
+using longOop = longOopDesc *;
+using floatOop = floatOopDesc *;
+using doubleOop = doubleOopDesc *;
 }

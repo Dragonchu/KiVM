@@ -7,109 +7,109 @@
 #include <kivm/memory/universe.h>
 
 namespace kivm {
-    static Lock sGCTriggerLock;
-    GCThread *GCThread::sGCThreadInstance = nullptr;
+static Lock sGCTriggerLock;
+GCThread *GCThread::sGCThreadInstance = nullptr;
 
-    void GCThread::initialize() {
-        GCThread::sGCThreadInstance = new GCThread;
-        sGCThreadInstance->_gcState = GCState::ENJOYING_HOLIDAY;
+void GCThread::initialize() {
+  GCThread::sGCThreadInstance = new GCThread;
+  sGCThreadInstance->_gcState = GCState::ENJOYING_HOLIDAY;
+}
+
+void GCThread::run() {
+  EXPLORE("GCThread.run()");
+  setThreadName(L"GCThread");
+
+  while (getThreadState() != ThreadState::DIED) {
+    // Wait until GC is required
+    if (getState() == GCState::ENJOYING_HOLIDAY) {
+      D("[GCThread]: waiting to be woken up");
+      _triggerMonitor.enter();
+      _triggerMonitor.wait();
+      _triggerMonitor.leave();
+
+      auto state = getState();
+      if (state == GCState::WAITING_FOR_SAFEPOINT) {
+        D("[GCThread]: stopping the world");
+
+      } else if (state == GCState::GC_STOPPED) {
+        D("GCThread: VM exited, stopping GC thread");
+        break;
+      }
     }
 
-    void GCThread::run() {
-        EXPLORE("GCThread.run()");
-        setThreadName(L"GCThread");
-
-        while (getThreadState() != ThreadState::DIED) {
-            // Wait until GC is required
-            if (getState() == GCState::ENJOYING_HOLIDAY) {
-                D("[GCThread]: waiting to be woken up");
-                _triggerMonitor.enter();
-                _triggerMonitor.wait();
-                _triggerMonitor.leave();
-
-                auto state = getState();
-                if (state == GCState::WAITING_FOR_SAFEPOINT) {
-                    D("[GCThread]: stopping the world");
-
-                } else if (state == GCState::GC_STOPPED) {
-                    D("GCThread: VM exited, stopping GC thread");
-                    break;
-                }
-            }
-
-            // Wait until all threads are in safepoint
-            if (isAllThreadInSafePoint()) {
-                D("[GCThread]: collecting");
-                doGarbageCollection();
-                continue;
-            }
-
-            sched_yield();
-        }
+    // Wait until all threads are in safepoint
+    if (isAllThreadInSafePoint()) {
+      D("[GCThread]: collecting");
+      doGarbageCollection();
+      continue;
     }
 
-    bool GCThread::isAllThreadInSafePoint() {
-        int total = 0;
-        int inSafepoint = 0;
+    sched_yield();
+  }
+}
 
-        Threads::forEach([&](JavaThread *thread) {
-            ++total;
-            if (thread->getThreadState() != ThreadState::DIED
-                && thread->isInSafepoint()) {
-                ++inSafepoint;
-            }
-            return false;
-        });
+bool GCThread::isAllThreadInSafePoint() {
+  int total = 0;
+  int inSafepoint = 0;
 
-        return inSafepoint == total;
+  Threads::forEach([&](JavaThread *thread) {
+    ++total;
+    if (thread->getThreadState() != ThreadState::DIED
+        && thread->isInSafepoint()) {
+      ++inSafepoint;
     }
+    return false;
+  });
 
-    void GCThread::doGarbageCollection() {
-        _gcState = GCState::GC_RUNNING;
-        Universe::sCollectedHeapInstance->doGarbageCollection();
-        _gcState = GCState::ENJOYING_HOLIDAY;
+  return inSafepoint == total;
+}
 
-        // wake up all threads to continue their jobs
-        _gcWaitMonitor.notifyAll();
-    }
+void GCThread::doGarbageCollection() {
+  _gcState = GCState::GC_RUNNING;
+  Universe::sCollectedHeapInstance->doGarbageCollection();
+  _gcState = GCState::ENJOYING_HOLIDAY;
 
-    Monitor *GCThread::required() {
-        LockGuard lockGuard(sGCTriggerLock);
-        if (_gcState != GCState::WAITING_FOR_SAFEPOINT) {
-            // it is much safer to change status before triggering gc
-            _gcState = GCState::WAITING_FOR_SAFEPOINT;
+  // wake up all threads to continue their jobs
+  _gcWaitMonitor.notifyAll();
+}
 
-            // enter monitor so that other threads can do wait on it
-            // and when gc finishes, just notify this monitor to wake
-            // up all waiting threads to continue their jobs
-            _gcWaitMonitor.enter();
+Monitor *GCThread::required() {
+  LockGuard lockGuard(sGCTriggerLock);
+  if (_gcState != GCState::WAITING_FOR_SAFEPOINT) {
+    // it is much safer to change status before triggering gc
+    _gcState = GCState::WAITING_FOR_SAFEPOINT;
 
-            // notify our gc thread to work
-            _triggerMonitor.notify();
+    // enter monitor so that other threads can do wait on it
+    // and when gc finishes, just notify this monitor to wake
+    // up all waiting threads to continue their jobs
+    _gcWaitMonitor.enter();
 
-            // if one triggered gc successfully
-            // it should be responsible for this lock
-            return &_gcWaitMonitor;
-        }
-        return nullptr;
-    }
+    // notify our gc thread to work
+    _triggerMonitor.notify();
 
-    void GCThread::stop() {
-        if (_gcState == GCState::ENJOYING_HOLIDAY) {
-            _gcState = GCState::GC_STOPPED;
-            setThreadState(ThreadState::DIED);
-            _triggerMonitor.notify();
-            return;
-        }
+    // if one triggered gc successfully
+    // it should be responsible for this lock
+    return &_gcWaitMonitor;
+  }
+  return nullptr;
+}
 
-        if (_gcState == GCState::GC_RUNNING
-            || _gcState == GCState::WAITING_FOR_SAFEPOINT) {
-            setThreadState(ThreadState::DIED);
-            this->_nativeThread->join();
-        }
-    }
+void GCThread::stop() {
+  if (_gcState == GCState::ENJOYING_HOLIDAY) {
+    _gcState = GCState::GC_STOPPED;
+    setThreadState(ThreadState::DIED);
+    _triggerMonitor.notify();
+    return;
+  }
 
-    void GCThread::wait() {
-        _gcWaitMonitor.wait();
-    }
+  if (_gcState == GCState::GC_RUNNING
+      || _gcState == GCState::WAITING_FOR_SAFEPOINT) {
+    setThreadState(ThreadState::DIED);
+    this->_nativeThread->join();
+  }
+}
+
+void GCThread::wait() {
+  _gcWaitMonitor.wait();
+}
 }

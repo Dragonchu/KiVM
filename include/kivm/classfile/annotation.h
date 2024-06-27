@@ -6,45 +6,45 @@
 #include <kivm/classfile/attributeInfo.h>
 
 namespace kivm {
-    struct Annotation {
-        String _typeName;
-        annotation *_anno;
+struct Annotation {
+  String _typeName;
+  annotation *_anno;
 
-        Annotation(cp_info **pool, annotation *anno);
+  Annotation(cp_info **pool, annotation *anno);
 
-        inline bool checkTypeName(const String &typeName) {
-            return typeName == _typeName;
-        }
-    };
+  inline bool checkTypeName(const String &typeName) {
+    return typeName == _typeName;
+  }
+};
 
-    struct ParameterAnnotation {
-        int _count;
-        Annotation *_annos;
+struct ParameterAnnotation {
+  int _count;
+  Annotation *_annos;
 
-        explicit ParameterAnnotation(cp_info **pool, parameter_annotations_t *source);
+  explicit ParameterAnnotation(cp_info **pool, parameter_annotations_t *source);
 
-        ~ParameterAnnotation();
+  ~ParameterAnnotation();
 
-        inline bool checkTypeName(const String &typeName) {
-            for (int i = 0; i < _count; ++i) {
-                if (_annos[i].checkTypeName(typeName)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    };
+  inline bool checkTypeName(const String &typeName) {
+    for (int i = 0; i < _count; ++i) {
+      if (_annos[i].checkTypeName(typeName)) {
+        return true;
+      }
+    }
+    return false;
+  }
+};
 
-    struct TypeAnnotation {
-        type_annotation::target_info_t *_target_info;
-        Annotation *_anno;
+struct TypeAnnotation {
+  type_annotation::target_info_t *_target_info;
+  Annotation *_anno;
 
-        explicit TypeAnnotation(cp_info **pool, type_annotation *source);
+  explicit TypeAnnotation(cp_info **pool, type_annotation *source);
 
-        ~TypeAnnotation();
+  ~TypeAnnotation();
 
-        inline bool checkTypeName(const String &typeName) {
-            return _anno->checkTypeName(typeName);
-        }
-    };
+  inline bool checkTypeName(const String &typeName) {
+    return _anno->checkTypeName(typeName);
+  }
+};
 }

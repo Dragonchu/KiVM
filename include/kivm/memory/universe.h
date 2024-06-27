@@ -7,27 +7,27 @@
 #include <kivm/memory/collectedHeap.h>
 
 namespace kivm {
-    class Universe final {
-        friend class GCThread;
+class Universe final {
+  friend class GCThread;
 
-    private:
-        static CollectedHeap *sCollectedHeapInstance;
+ private:
+  static CollectedHeap *sCollectedHeapInstance;
 
-    public:
-        static void initialize();
+ public:
+  static void initialize();
 
-        static void destroy();
+  static void destroy();
 
-        static void *allocVirtual(size_t size);
+  static void *allocVirtual(size_t size);
 
-        static void deallocVirtual(void *memory);
+  static void deallocVirtual(void *memory);
 
-        static void *allocHeap(size_t size);
+  static void *allocHeap(size_t size);
 
-        static void *allocCObject(size_t size);
+  static void *allocCObject(size_t size);
 
-        static void deallocCObject(void *memory);
+  static void deallocCObject(void *memory);
 
-        static bool isHeapObject(void *addr);
-    };
+  static bool isHeapObject(void *addr);
+};
 }

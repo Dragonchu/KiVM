@@ -8,10 +8,10 @@
 using namespace kivm;
 
 JAVA_NATIVE jint Java_java_lang_Float_floatToRawIntBits(JNIEnv *env, jclass java_lang_Float, jfloat f) {
-    union {
-        jint i;
-        jfloat f;
-    } u{};
-    u.f = f;
-    return u.i;
+  union {
+    jint i;
+    jfloat f;
+  } u{};
+  u.f = f;
+  return u.i;
 }

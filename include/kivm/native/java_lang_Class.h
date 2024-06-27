@@ -10,39 +10,39 @@
 #include <kivm/oop/klass.h>
 
 namespace kivm {
-    class CopyingHeap;
+class CopyingHeap;
 
-    namespace java {
-        namespace lang {
-            class Class {
-                friend class kivm::CopyingHeap;
+namespace java {
+namespace lang {
+class Class {
+  friend class kivm::CopyingHeap;
 
-            private:
-                static HashMap<kivm::String, mirrorOop> _primitiveTypeMirrors;
+ private:
+  static HashMap<kivm::String, mirrorOop> _primitiveTypeMirrors;
 
-                enum ClassMirrorState {
-                    FIXED, NOT_FIXED
-                };
+  enum ClassMirrorState {
+    FIXED, NOT_FIXED
+  };
 
-                static HashMap<kivm::String, mirrorOop> &getPrimitiveTypeMirrors();
+  static HashMap<kivm::String, mirrorOop> &getPrimitiveTypeMirrors();
 
-                static std::queue<kivm::String> &getDelayedMirrors();
+  static std::queue<kivm::String> &getDelayedMirrors();
 
-                static std::queue<kivm::Klass *> &getDelayedArrayClassMirrors();
+  static std::queue<kivm::Klass *> &getDelayedArrayClassMirrors();
 
-                static ClassMirrorState &getMirrorState();
+  static ClassMirrorState &getMirrorState();
 
-            public:
-                static void initialize();
+ public:
+  static void initialize();
 
-                static void mirrorCoreAndDelayedClasses();
+  static void mirrorCoreAndDelayedClasses();
 
-                static void mirrorDelayedArrayClasses();
+  static void mirrorDelayedArrayClasses();
 
-                static void createMirror(Klass *klass, mirrorOop javaLoader);
+  static void createMirror(Klass *klass, mirrorOop javaLoader);
 
-                static mirrorOop findPrimitiveTypeMirror(const kivm::String &signature);
-            };
-        }
-    }
+  static mirrorOop findPrimitiveTypeMirror(const kivm::String &signature);
+};
+}
+}
 }

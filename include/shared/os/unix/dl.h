@@ -8,27 +8,27 @@
 #include <shared/os/common/dl.h>
 
 namespace kivm {
-    namespace dl {
-        class UnixDLInterface final {
-        private:
-            DLHandler handler;
+namespace dl {
+class UnixDLInterface final {
+ private:
+  DLHandler handler;
 
-        public:
-            UnixDLInterface();
+ public:
+  UnixDLInterface();
 
-            UnixDLInterface(const UnixDLInterface &) = delete;
+  UnixDLInterface(const UnixDLInterface &) = delete;
 
-            explicit UnixDLInterface(const std::string &file);
+  explicit UnixDLInterface(const std::string &file);
 
-            ~UnixDLInterface();
+  ~UnixDLInterface();
 
-            bool open(const std::string &file);
+  bool open(const std::string &file);
 
-            DLSymbol findSymbol(const std::string &symbolName) const;
+  DLSymbol findSymbol(const std::string &symbolName) const;
 
-            void close();
-        };
-    }
+  void close();
+};
+}
 }
 
 #endif

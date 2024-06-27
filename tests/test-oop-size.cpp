@@ -11,11 +11,11 @@
 using namespace kivm;
 
 int main() {
-    printf("intOopDesc: %zd\n", sizeof(intOopDesc));
-    printf("floatOopDesc: %zd\n", sizeof(floatOopDesc));
-    printf("doubleOopDesc: %zd\n", sizeof(doubleOopDesc));
-    printf("longOopDesc: %zd\n", sizeof(longOopDesc));
-    printf("instanceOopDesc: %zd\n", sizeof(instanceOopDesc));
-    printf("arrayOopDesc: %zd\n", sizeof(arrayOopDesc));
-    printf("mirrorOopDesc: %zd\n", sizeof(mirrorOopDesc));
+  printf("intOopDesc: %zd\n", sizeof(intOopDesc));
+  printf("floatOopDesc: %zd\n", sizeof(floatOopDesc));
+  printf("doubleOopDesc: %zd\n", sizeof(doubleOopDesc));
+  printf("longOopDesc: %zd\n", sizeof(longOopDesc));
+  printf("instanceOopDesc: %zd\n", sizeof(instanceOopDesc));
+  printf("arrayOopDesc: %zd\n", sizeof(arrayOopDesc));
+  printf("mirrorOopDesc: %zd\n", sizeof(mirrorOopDesc));
 }

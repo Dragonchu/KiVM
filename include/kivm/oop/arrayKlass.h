@@ -7,95 +7,95 @@
 #include <kivm/oop/oopfwd.h>
 
 namespace kivm {
-    class ArrayKlass : public Klass {
-        friend class CopyingHeap;
+class ArrayKlass : public Klass {
+  friend class CopyingHeap;
 
-    private:
-        ClassLoader *_classLoader = nullptr;
-        mirrorOop _javaLoader = nullptr;
+ private:
+  ClassLoader *_classLoader = nullptr;
+  mirrorOop _javaLoader = nullptr;
 
-        int _dimension;
+  int _dimension;
 
-    public:
-        ArrayKlass(ClassLoader *classLoader, mirrorOop javaLoader,
-                   int dimension, ClassType classType);
+ public:
+  ArrayKlass(ClassLoader *classLoader, mirrorOop javaLoader,
+             int dimension, ClassType classType);
 
-        ClassLoader *getClassLoader() const {
-            return _classLoader;
-        }
+  ClassLoader *getClassLoader() const {
+    return _classLoader;
+  }
 
-        int getDimension() const {
-            return _dimension;
-        }
+  int getDimension() const {
+    return _dimension;
+  }
 
-        mirrorOop getJavaLoader() {
-            return _javaLoader;
-        }
+  mirrorOop getJavaLoader() {
+    return _javaLoader;
+  }
 
-        bool isObjectArray() const {
-            return getClassType() == ClassType::OBJECT_ARRAY_CLASS;
-        }
+  bool isObjectArray() const {
+    return getClassType() == ClassType::OBJECT_ARRAY_CLASS;
+  }
 
-        void linkClass() override;
+  void linkClass() override;
 
-        void initClass() override;
+  void initClass() override;
 
-        virtual void copyArrayTo(arrayOop src, arrayOop desc, int srcPos, int destPos, int length) = 0;
-    };
+  virtual void copyArrayTo(arrayOop src, arrayOop desc, int srcPos, int destPos, int length) = 0;
+};
 
-    class TypeArrayKlass : public ArrayKlass {
-    private:
-        ValueType _componentType;
+class TypeArrayKlass : public ArrayKlass {
+ private:
+  ValueType _componentType;
 
-        // Only available when dimension > 1
-        TypeArrayKlass *_downDimensionType = nullptr;
+  // Only available when dimension > 1
+  TypeArrayKlass *_downDimensionType = nullptr;
 
-    public:
-        TypeArrayKlass(ClassLoader *classLoader, mirrorOop javaLoader,
-                       int dimension, ValueType componentType);
+ public:
+  TypeArrayKlass(ClassLoader *classLoader, mirrorOop javaLoader,
+                 int dimension, ValueType componentType);
 
-        TypeArrayKlass(ClassLoader *classLoader, TypeArrayKlass *downType);
+  TypeArrayKlass(ClassLoader *classLoader, TypeArrayKlass *downType);
 
-        ValueType getComponentType() const {
-            return _componentType;
-        }
+  ValueType getComponentType() const {
+    return _componentType;
+  }
 
-        void linkClass() override;
+  void linkClass() override;
 
-        TypeArrayKlass *getDownDimensionType() const {
-            return _downDimensionType;
-        }
+  TypeArrayKlass *getDownDimensionType() const {
+    return _downDimensionType;
+  }
 
-        typeArrayOop newInstance(int length);
+  typeArrayOop newInstance(int length);
 
-        void copyArrayTo(arrayOop src, arrayOop dest, int srcPos, int destPos, int length) override;
-    };
+  void copyArrayTo(arrayOop src, arrayOop dest, int srcPos, int destPos, int length) override;
+};
 
-    class ObjectArrayKlass : public ArrayKlass {
-    private:
-        InstanceKlass *_componentType = nullptr;
+class ObjectArrayKlass : public ArrayKlass {
+ private:
+  InstanceKlass *_componentType = nullptr;
 
-        // Only available when dimension > 1
-        ObjectArrayKlass *_downDimensionType;
+  // Only available when dimension > 1
+  ObjectArrayKlass *_downDimensionType;
 
-    public:
-        ObjectArrayKlass(ClassLoader *classLoader, mirrorOop javaLoader,
-                         int dimension, InstanceKlass *componentType);
+ public:
+  ObjectArrayKlass(ClassLoader *classLoader, mirrorOop javaLoader,
+                   int dimension, InstanceKlass *componentType);
 
-        ObjectArrayKlass(ClassLoader *classLoader, ObjectArrayKlass *downType);
+  ObjectArrayKlass(ClassLoader *classLoader, ObjectArrayKlass *downType);
 
-        InstanceKlass *getComponentType() const {
-            return _componentType;
-        }
+  InstanceKlass *getComponentType() const {
+    return _componentType;
+  }
 
-        void linkClass() override;
+  void linkClass() override;
 
-        ObjectArrayKlass *getDownDimensionType() const {
-            return _downDimensionType;
-        }
+  ObjectArrayKlass *getDownDimensionType() const {
+    return _downDimensionType;
+  }
 
-        objectArrayOop newInstance(int length);
+  objectArrayOop newInstance(int length);
 
-        void copyArrayTo(arrayOop src, arrayOop dest, int srcPos, int destPos, int length) override;
-    };
+  void copyArrayTo(arrayOop src, arrayOop dest, int srcPos, int destPos, int length) override;
+};
 }

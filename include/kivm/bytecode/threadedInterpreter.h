@@ -14,37 +14,36 @@
 #include <kivm/bytecode/codeBlob.h>
 
 namespace kivm {
-    class Frame;
+class Frame;
 
-    class Method;
+class Method;
 
-    class InstanceKlass;
+class InstanceKlass;
 
-    class ThreadedInterpreter final {
-    public:
-        /**
-         * Run a thread method
-         *
-         * @param thread Java Thread that contains method
-         * @return method return value(nullptr if void) o
-         *         exception object(if thrown and not handled)
-         */
-        static oop interp(JavaThread *thread);
+class ThreadedInterpreter final {
+ public:
+  /**
+   * Run a thread method
+   *
+   * @param thread Java Thread that contains method
+   * @return method return value(nullptr if void) o
+   *         exception object(if thrown and not handled)
+   */
+  static oop interp(JavaThread *thread);
 
-        static void initialize();
+  static void initialize();
 
+ private:
+  static void *_jumpTable[OPC_NUM_OPCODES];
 
-    private:
-        static void *_jumpTable[OPC_NUM_OPCODES];
-
-        static oop threaded(JavaThread *thread, void **jump,
-                            Frame *currentFrame,
-                            Method *currentMethod,
-                            InstanceKlass *currentClass,
-                            const CodeBlob &codeBlob,
-                            u4 &pc,
-                            Stack &stack,
-                            Locals &locals);
-    };
+  static oop threaded(JavaThread *thread, void **jump,
+                      Frame *currentFrame,
+                      Method *currentMethod,
+                      InstanceKlass *currentClass,
+                      const CodeBlob &codeBlob,
+                      u4 &pc,
+                      Stack &stack,
+                      Locals &locals);
+};
 }
 #endif

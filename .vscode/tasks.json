@@ -1,57 +1,57 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "compileExampleJava",
-            "type": "shell",
-            "command": "cd java-src && make",
-        },
-        {
-            "label": "cmakeBuildDebugExe",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "-DCMAKE_BUILD_TYPE=Debug",
-                ".",
-                "&&",
-                "make"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "cmakeBuildExe",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                ".",
-                "&&",
-                "make"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": []
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "compileExampleJava",
+      "type": "shell",
+      "command": "cd java-src && make"
+    },
+    {
+      "label": "cmakeBuildDebugExe",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-DCMAKE_BUILD_TYPE=Debug",
+        ".",
+        "&&",
+        "make"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "cmakeBuildExe",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        ".",
+        "&&",
+        "make"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    }
+  ]
 }

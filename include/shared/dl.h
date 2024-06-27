@@ -8,11 +8,11 @@
 #include <shared/os/windows/dl.h>
 
 namespace kivm {
-    namespace dl {
+namespace dl {
 #if defined(KIVM_PLATFORM_UNIX) || defined(KIVM_PLATFORM_APPLE)
-        using DLInterface = UnixDLInterface;
+using DLInterface = UnixDLInterface;
 #elif KIVM_PLATFORM_WINDOWS
-        using DLInterface = WindowsDLInterface;
+using DLInterface = WindowsDLInterface;
 #endif
-    }
+}
 }

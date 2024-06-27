@@ -7,21 +7,21 @@
 #include <shared/dl.h>
 
 namespace kivm {
-    class JavaNativeLibrary final {
-    private:
-        dl::DLInterface _sharedLibrary;
-        String _libraryName;
-        bool _linked;
+class JavaNativeLibrary final {
+ private:
+  dl::DLInterface _sharedLibrary;
+  String _libraryName;
+  bool _linked;
 
-        String findLibrary(const String &libraryName);
+  String findLibrary(const String &libraryName);
 
-    public:
-        explicit JavaNativeLibrary(const String &libraryName);
+ public:
+  explicit JavaNativeLibrary(const String &libraryName);
 
-        ~JavaNativeLibrary();
+  ~JavaNativeLibrary();
 
-        bool prepare();
+  bool prepare();
 
-        void dispose();
-    };
+  void dispose();
+};
 }

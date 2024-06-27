@@ -8,9 +8,9 @@
 #include <mutex>
 
 namespace kivm {
-    using Lock = std::mutex;
-    using RecursiveLock = std::recursive_mutex;
+using Lock = std::mutex;
+using RecursiveLock = std::recursive_mutex;
 
-    using LockGuard = std::lock_guard<Lock>;
-    using RecursiveLockGuard = std::lock_guard<RecursiveLock>;
+using LockGuard = std::lock_guard<Lock>;
+using RecursiveLockGuard = std::lock_guard<RecursiveLock>;
 }

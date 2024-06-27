@@ -8,22 +8,22 @@
 #include <shared/hashMap.h>
 
 namespace kivm {
-    class Klass;
+class Klass;
 
-    class SystemDictionary final {
-    private:
-        HashMap<String, Klass *> _classes;
-        Lock _lock;
+class SystemDictionary final {
+ private:
+  HashMap<String, Klass *> _classes;
+  Lock _lock;
 
-    public:
-        static SystemDictionary *get();
+ public:
+  static SystemDictionary *get();
 
-        Klass *find(const String &name);
+  Klass *find(const String &name);
 
-        void put(const String &name, Klass *klass);
+  void put(const String &name, Klass *klass);
 
-        inline const HashMap<String, Klass *> &getLoadedClasses() const {
-            return _classes;
-        };
-    };
+  inline const HashMap<String, Klass *> &getLoadedClasses() const {
+    return _classes;
+  };
+};
 }

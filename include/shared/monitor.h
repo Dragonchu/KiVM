@@ -12,56 +12,56 @@
 #include <chrono>
 
 namespace kivm {
-    /**
-     * StackOverflow:
-     *
-     * In the case of recursive mutex,
-     * you do have to ensure that the given thread has only locked the recursive mutex once,
-     * since the condition variable only will use the unlock method
-     * on the unique_lock once during the wait.
-     */
+/**
+ * StackOverflow:
+ *
+ * In the case of recursive mutex,
+ * you do have to ensure that the given thread has only locked the recursive mutex once,
+ * since the condition variable only will use the unlock method
+ * on the unique_lock once during the wait.
+ */
 
-    class Monitor final {
-    private:
-        RecursiveLock _lock;
-        std::condition_variable_any _cond;
+class Monitor final {
+ private:
+  RecursiveLock _lock;
+  std::condition_variable_any _cond;
 
-    public:
-        Monitor() = default;
+ public:
+  Monitor() = default;
 
-        Monitor(const Monitor &) = delete;
+  Monitor(const Monitor &) = delete;
 
-        Monitor(Monitor &&) noexcept = delete;
+  Monitor(Monitor &&) noexcept = delete;
 
-        ~Monitor() = default;
+  ~Monitor() = default;
 
-        void enter() {
-            _lock.lock();
-        }
+  void enter() {
+    _lock.lock();
+  }
 
-        void wait() {
-            _cond.wait(_lock);
-        }
+  void wait() {
+    _cond.wait(_lock);
+  }
 
-        void wait(jlong millisecond) {
-            _cond.wait_for(_lock, std::chrono::milliseconds(millisecond));
-        }
+  void wait(jlong millisecond) {
+    _cond.wait_for(_lock, std::chrono::milliseconds(millisecond));
+  }
 
-        void notify() {
-            _cond.notify_one();
-        }
+  void notify() {
+    _cond.notify_one();
+  }
 
-        void notifyAll() {
-            _cond.notify_all();
-        }
+  void notifyAll() {
+    _cond.notify_all();
+  }
 
-        void leave() {
-            _lock.unlock();
-        }
+  void leave() {
+    _lock.unlock();
+  }
 
-        void forceUnlock() {
-            _lock.try_lock();
-            _lock.unlock();
-        }
-    };
+  void forceUnlock() {
+    _lock.try_lock();
+    _lock.unlock();
+  }
+};
 }

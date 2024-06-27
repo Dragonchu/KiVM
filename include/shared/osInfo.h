@@ -9,11 +9,11 @@
 
 namespace kivm {
 #if defined(KIVM_PLATFORM_APPLE)
-    using OSInformation = MacOSInformation;
+using OSInformation = MacOSInformation;
 #elif defined(KIVM_PLATFORM_UNIX)
-    using OSInformation = UnixInformation;
+using OSInformation = UnixInformation;
 #elif defined(KIVM_PLATFORM_WINDOWS)
-    using OSInformation = WindowsInformation;
+using OSInformation = WindowsInformation;
 #else
 #error Unknow platform
 #endif

@@ -10,7 +10,7 @@
 #include <kivm/bytecode/threadedInterpreter.h>
 
 namespace kivm {
-    using DefaultInterpreter = ThreadedInterpreter;
+using DefaultInterpreter = ThreadedInterpreter;
 }
 
 #else

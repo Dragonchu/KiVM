@@ -4,11 +4,11 @@
 #include <kivm/runtime/frame.h>
 
 namespace kivm {
-    Frame::Frame(int maxLocals, int maxStacks)
-            : _locals(maxLocals), _stack(maxStacks) {
-    }
+Frame::Frame(int maxLocals, int maxStacks)
+    : _locals(maxLocals), _stack(maxStacks) {
+}
 
-    FrameList::FrameList(int maxFrames)
-            : _max_frames(maxFrames), _size(0), _current(nullptr) {
-    }
+FrameList::FrameList(int maxFrames)
+    : _max_frames(maxFrames), _size(0), _current(nullptr) {
+}
 }

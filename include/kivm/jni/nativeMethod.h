@@ -6,29 +6,29 @@
 #include <kivm/oop/method.h>
 
 namespace kivm {
-    using JNIMethodPointer = void *;
+using JNIMethodPointer = void *;
 
-    class NativeMethodPool;
+class NativeMethodPool;
 
-    class JavaNativeMethod final {
-        friend class NativeMethodPool;
+class JavaNativeMethod final {
+  friend class NativeMethodPool;
 
-    public:
-        static JavaNativeMethod *resolve(Method *method);
+ public:
+  static JavaNativeMethod *resolve(Method *method);
 
-    private:
-        Method *_javaMethod = nullptr;
-        JNIMethodPointer _invocationTarget = nullptr;
+ private:
+  Method *_javaMethod = nullptr;
+  JNIMethodPointer _invocationTarget = nullptr;
 
-    private:
-        JavaNativeMethod(Method *method, JNIMethodPointer target);
+ private:
+  JavaNativeMethod(Method *method, JNIMethodPointer target);
 
-        ~JavaNativeMethod();
+  ~JavaNativeMethod();
 
-    public:
-        inline JNIMethodPointer getInvocationTarget() const {
-            return _invocationTarget;
-        }
-    };
+ public:
+  inline JNIMethodPointer getInvocationTarget() const {
+    return _invocationTarget;
+  }
+};
 }
 

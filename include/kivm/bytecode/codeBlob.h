@@ -6,31 +6,31 @@
 #include <kivm/kivm.h>
 
 namespace kivm {
-    class CodeBlob final {
-        friend class Method;
+class CodeBlob final {
+  friend class Method;
 
-    private:
-        u1 *_base;
-        u4 _size;
+ private:
+  u1 *_base;
+  u4 _size;
 
-        void init(u1 *base, u4 size) {
-            this->_base = base;
-            this->_size = size;
-        }
+  void init(u1 *base, u4 size) {
+    this->_base = base;
+    this->_size = size;
+  }
 
-    public:
-        CodeBlob() : _base(nullptr), _size(0) {}
+ public:
+  CodeBlob() : _base(nullptr), _size(0) {}
 
-        inline bool validate() {
-            return _base != nullptr && _size > 0;
-        }
+  inline bool validate() {
+    return _base != nullptr && _size > 0;
+  }
 
-        inline bool validateOffset(int offset) const {
-            return offset >= 0 && offset < _size;
-        }
+  inline bool validateOffset(int offset) const {
+    return offset >= 0 && offset < _size;
+  }
 
-        inline u1 operator[](int offset) const {
-            return *(_base + offset);
-        }
-    };
+  inline u1 operator[](int offset) const {
+    return *(_base + offset);
+  }
+};
 }

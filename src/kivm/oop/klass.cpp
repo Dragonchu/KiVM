@@ -5,7 +5,7 @@
 #include <kivm/oop/klass.h>
 
 namespace kivm {
-    Klass::Klass() {
-        setClassState(ClassState::ALLOCATED);
-    }
+Klass::Klass() {
+  setClassState(ClassState::ALLOCATED);
+}
 }

@@ -6,16 +6,16 @@
 #include <shared/string.h>
 
 namespace kivm {
-    class FileSystem final {
-    public:
-        static bool isDirectory(const String &path);
+class FileSystem final {
+ public:
+  static bool isDirectory(const String &path);
 
-        static bool canRead(const String &path);
+  static bool canRead(const String &path);
 
-        static size_t getFileSize(const String &path);
+  static size_t getFileSize(const String &path);
 
-        static void *createFileMapping(const String &path, int *pFd, size_t *pSize);
+  static void *createFileMapping(const String &path, int *pFd, size_t *pSize);
 
-        static void destroyFileMapping(void *memory, int fd, size_t size);
-    };
+  static void destroyFileMapping(void *memory, int fd, size_t size);
+};
 }

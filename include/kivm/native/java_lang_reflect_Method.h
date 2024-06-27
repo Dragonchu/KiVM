@@ -6,17 +6,17 @@
 #include <kivm/oop/instanceKlass.h>
 
 namespace kivm {
-    namespace java {
-        namespace lang {
-            namespace reflect {
-                struct Method {
-                    static void initialize();
+namespace java {
+namespace lang {
+namespace reflect {
+struct Method {
+  static void initialize();
 
-                    static InstanceKlass *CLASS;
-                    static FieldID *FIELD_CLAZZ;
-                    static FieldID *FIELD_SLOT;
-                };
-            }
-        }
-    }
+  static InstanceKlass *CLASS;
+  static FieldID *FIELD_CLAZZ;
+  static FieldID *FIELD_SLOT;
+};
+}
+}
+}
 }

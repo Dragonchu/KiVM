@@ -1,32 +1,36 @@
 {
-    "version": "0.2.0",
-    "configurations": [
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "KiVM Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/java",
+      "args": [
+        "-cp",
+        "./java-out/:${config:rt.jar.path}",
+        "com.imkiva.kivm.${input:className}"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
         {
-            "name": "KiVM Debug",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/java",
-            "args": ["-cp","./java-out/:${config:rt.jar.path}", "com.imkiva.kivm.${input:className}"],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "启用 gdb 的 pretty-printing 功能",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ],
-            "preLaunchTask": "cmakeBuildDebugExe"
+          "description": "启用 gdb 的 pretty-printing 功能",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
         }
-    ],
-    "inputs": [
-        {
-            "id": "className",
-            "type": "promptString",
-            "description": "please input the class name",
-        }
-    ]
+      ],
+      "preLaunchTask": "cmakeBuildDebugExe"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "className",
+      "type": "promptString",
+      "description": "please input the class name"
+    }
+  ]
 }

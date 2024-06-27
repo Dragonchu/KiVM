@@ -9,17 +9,17 @@
 using namespace kivm;
 
 JAVA_NATIVE void Java_java_lang_ClassLoader_registerNatives(JNIEnv *env, jclass java_lang_ClassLoader) {
-    D("java/lang/ClassLoader.registerNatives()V");
+  D("java/lang/ClassLoader.registerNatives()V");
 }
 
 JAVA_NATIVE jclass Java_java_lang_ClassLoader_findLoadedClass0(JNIEnv *env, jclass unused, jstring jname) {
-    auto nameObj = Resolver::instance(jname);
-    if (nameObj == nullptr) { SHOULD_NOT_REACH_HERE(); }
+  auto nameObj = Resolver::instance(jname);
+  if (nameObj == nullptr) { SHOULD_NOT_REACH_HERE(); }
 
-    const auto &classBinaryName = java::lang::String::toNativeString(nameObj);
-    const auto &fixedName = strings::replaceAll(classBinaryName, Global::DOT, Global::SLASH);
+  const auto &classBinaryName = java::lang::String::toNativeString(nameObj);
+  const auto &fixedName = strings::replaceAll(classBinaryName, Global::DOT, Global::SLASH);
 
-    auto dict = SystemDictionary::get();
-    auto klass = dict->find(fixedName);
-    return klass == nullptr ? nullptr : klass->getJavaMirror();
+  auto dict = SystemDictionary::get();
+  auto klass = dict->find(fixedName);
+  return klass == nullptr ? nullptr : klass->getJavaMirror();
 }

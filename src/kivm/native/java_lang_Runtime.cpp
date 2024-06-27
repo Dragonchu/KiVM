@@ -9,5 +9,5 @@
 using namespace kivm;
 
 JAVA_NATIVE jint Java_java_lang_Runtime_availableProcessors(JNIEnv *env, jclass unused) {
-    return OSInformation::getCpuNumbers();
+  return OSInformation::getCpuNumbers();
 }

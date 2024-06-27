@@ -18,22 +18,22 @@ find_library(ZIP_LIBRARY NAMES zip libzip
         PATHS $ENV{ZIP_DIR} ${ZIP_DIR} $ENV{WIN32_ZIP_DIR} ${WIN32_ZIP_DIR} /usr /usr/local /opt/local
         PATH_SUZIPXES lib lib64 x86_64-linux-gnu lib/x86_64-linux-gnu
         HINTS ${PC_LIBZIP_LIBDIR} ${PC_LIBZIP_LIBRARY_DIRS}
-        )
+)
 
 find_path(ZIP_INCLUDE_DIR zip.h
         PATHS $ENV{ZIP_DIR} ${ZIP_DIR} $ENV{WIN32_ZIP_DIR} ${WIN32_ZIP_DIR} /usr /usr/local /opt/local
         PATH_SUZIPXES include include/zip include/x86_64-linux-gnu x86_64-linux-gnu
         HINTS ${PC_LIBZIP_INCLUDEDIR} ${PC_LIBZIP_INCLUDE_DIRS}
-        )
+)
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set ZIP_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(ZIP  DEFAULT_MSG
+find_package_handle_standard_args(ZIP DEFAULT_MSG
         ZIP_LIBRARY ZIP_INCLUDE_DIR)
 mark_as_advanced(ZIP_INCLUDE_DIR ZIP_LIBRARY)
 
-if(ZIP_FOUND)
+if (ZIP_FOUND)
     set(ZIP_LIBRARIES ${ZIP_LIBRARY})
     set(ZIP_INCLUDE_DIRS ${ZIP_INCLUDE_DIR})
-endif()
+endif ()

@@ -6,22 +6,22 @@
 #include <kivm/kivm.h>
 
 namespace kivm {
-    class CollectedHeap {
-    public:
-        virtual ~CollectedHeap() = default;
+class CollectedHeap {
+ public:
+  virtual ~CollectedHeap() = default;
 
-        virtual void *allocate(size_t size) = 0;
+  virtual void *allocate(size_t size) = 0;
 
-        virtual void initializeAll() = 0;
+  virtual void initializeAll() = 0;
 
-        virtual void* getHeapStart() = 0;
+  virtual void *getHeapStart() = 0;
 
-        virtual void *getHeapEnd() = 0;
+  virtual void *getHeapEnd() = 0;
 
-        virtual size_t getHeapSize() = 0;
+  virtual size_t getHeapSize() = 0;
 
-        virtual bool isHeapObject(void *addr) = 0;
+  virtual bool isHeapObject(void *addr) = 0;
 
-        virtual void doGarbageCollection() = 0;
-    };
+  virtual void doGarbageCollection() = 0;
+};
 }
