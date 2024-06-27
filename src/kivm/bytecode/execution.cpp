@@ -34,43 +34,33 @@ bool Execution::initializeClass(JavaThread *thread, InstanceKlass *klass) {
       if (!Execution::initializeClass(thread, (InstanceKlass *) super_klass)) {
         return false;
       }
-      if (klassName.substr(0, 3) == L"com") {
-        EXPLORE("SuperClass %S already initialized.",
-                (super_klass->getName()).c_str());
-      }
+      EXPLORE_IF_COM(klassName, "SuperClass %S already initialized.",
+                     (super_klass->getName()).c_str());
     }
 
-    if (klassName.substr(0, 3) == L"com") {
-      EXPLORE("Init class %S",
-              klassName.c_str());
-    }
+    EXPLORE_IF_COM(klassName, "Init class %S",
+                   klassName.c_str());
     klass->initClass();
     auto *clinit = klass->getThisClassMethod(L"<clinit>", L"()V");
     if (clinit != nullptr && clinit->getClass() == klass) {
       D("<clinit> found in %S, invoking.",
         (klass->getName()).c_str());
-      if (klassName.substr(0, 3) == L"com") {
-        EXPLORE("<clinit> found in %S, invoking.",
-                (klass->getName()).c_str());
-        EXPLORE("JavaCall::withArgs(thread, clinit, {});");
-      }
+      EXPLORE_IF_COM(klassName, "<clinit> found in %S, invoking.",
+                     (klass->getName()).c_str());
+      EXPLORE_IF_COM(klassName, "JavaCall::withArgs(thread, clinit, {});");
       JavaCall::withArgs(thread, clinit, {});
       if (thread->isExceptionOccurred()) {
         return false;
       }
     } else {
-      if (klassName.substr(0, 3) == L"com") {
-        EXPLORE("<clinit> not found in %S.",
-                (klass->getName()).c_str());
-      }
+      EXPLORE_IF_COM(klassName, "<clinit> not found in %S.",
+                     (klass->getName()).c_str());
     }
     klass->setClassState(ClassState::FULLY_INITIALIZED);
-    if (klassName.substr(0, 3) == L"com") {
-      EXPLORE("Class %S state is now FULLY_INITIALIZED.",
-              (klass->getName()).c_str());
-      EXPLORE("Class %S initialized.",
-              (klass->getName()).c_str());
-    }
+    EXPLORE_IF_COM(klassName, "Class %S state is now FULLY_INITIALIZED.",
+                   (klass->getName()).c_str());
+    EXPLORE_IF_COM(klassName, "Class %S initialized.",
+                   (klass->getName()).c_str());
   }
   return true;
 }

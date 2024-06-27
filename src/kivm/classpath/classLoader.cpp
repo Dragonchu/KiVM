@@ -48,10 +48,8 @@ Klass *BootstrapClassLoader::loadClass(const String &className) {
   if (iter != nullptr) {
     return iter;
   }
-  if (className.substr(0, 3) == L"com") {
-    EXPLORE("Class is not loaded %S", className.c_str());
-    EXPLORE("Let's find it");
-  }
+  EXPLORE_IF_COM(className,"Class is not loaded %S", className.c_str());
+  EXPLORE_IF_COM(className,"Let's find it");
 
   // OK, let's find it!
   auto *klass = BaseClassLoader::loadClass(className);
