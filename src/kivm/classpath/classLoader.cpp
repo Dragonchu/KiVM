@@ -56,14 +56,10 @@ Klass *BootstrapClassLoader::loadClass(const String &className) {
   if (klass != nullptr) {
     SystemDictionary::get()->put(className, klass);
     klass->setClassState(ClassState::LOADED);
-    if (className.substr(0, 3) == L"com") {
-      EXPLORE("Class state now is LOADED %S", className.c_str());
-      EXPLORE("Linking class %S", className.c_str());
-    }
+    EXPLORE_IF_COM(className, "Class state now is LOADED");
+    EXPLORE_IF_COM(className, "Linking class");
     klass->linkClass();
-    if (className.substr(0, 3) == L"com") {
-      EXPLORE("Class state now is LINKED %S", className.c_str());
-    }
+    EXPLORE_IF_COM(className, "Class state now is LINKED");
   }
   return klass;
 }

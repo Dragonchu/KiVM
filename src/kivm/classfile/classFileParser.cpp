@@ -49,9 +49,7 @@ ClassFile *ClassFileParser::parse(const String &className) {
   if (_content == nullptr) {
     return nullptr;
   }
-  if (className.substr(0, 3) == L"com") {
-    EXPLORE("Alloc classFile %S", className.c_str());
-  }
+  EXPLORE_IF_COM(className, "Alloc classFile");
   ClassFile *classFile = ClassFileParser::alloc();
   if (classFile == nullptr) {
     return nullptr;
@@ -59,28 +57,20 @@ ClassFile *ClassFileParser::parse(const String &className) {
 
   _classFileStream.init(_content, _size);
 
-  if (className.substr(0, 3) == L"com") {
-    EXPLORE("Read magic %S", className.c_str());
-  }
+  EXPLORE_IF_COM(className, "Read magic");
   classFile->magic = _classFileStream.get4();
   if (classFile->magic != 0xCAFEBABE) {
     ClassFileParser::dealloc(classFile);
     return nullptr;
   }
 
-  if (className.substr(0, 3) == L"com") {
-    EXPLORE("Read major and minor version %S", className.c_str());
-  }
+  EXPLORE_IF_COM(className, "Read major and minor version");
   classFile->major_version = _classFileStream.get2();
   classFile->minor_version = _classFileStream.get2();
 
-  if (className.substr(0, 3) == L"com") {
-    EXPLORE("Parsing Constant Pool %S", className.c_str());
-  }
+  EXPLORE_IF_COM(className, "Parsing Constant Pool");
   parseConstantPool(classFile, className);
-  if (className.substr(0, 3) == L"com") {
-    EXPLORE("Constant Pool parsed %S", className.c_str());
-  }
+  EXPLORE_IF_COM(className, "Constant Pool parsed %S", className.c_str());
 
   classFile->access_flags = _classFileStream.get2();
   classFile->this_class = _classFileStream.get2();
@@ -101,13 +91,9 @@ static void readPoolEntry(cp_info **pool, int index, ClassFileStream &stream) {
 
 void ClassFileParser::parseConstantPool(ClassFile *classFile, const String &className) {
   u2 count = classFile->constant_pool_count = _classFileStream.get2();
-  if (className.substr(0, 3) == L"com") {
-    EXPLORE("Total %d constant in %S", count, className.c_str());
-  }
+  EXPLORE_IF_COM(className, "Total %d constant", count);
 
-  if (className.substr(0, 3) == L"com") {
-    EXPLORE("Allocate constant_pool according count %S", className.c_str());
-  }
+  EXPLORE_IF_COM(className, "Allocate constant_pool according count");
   classFile->constant_pool = (cp_info **) Universe::allocCObject(sizeof(cp_info *) * count);
   cp_info **pool = classFile->constant_pool;
 
@@ -117,89 +103,61 @@ void ClassFileParser::parseConstantPool(ClassFile *classFile, const String &clas
     u1 tag = _classFileStream.peek1();
     switch (tag) {
       case CONSTANT_Utf8:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_Utf8 (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_Utf8", i);
         readPoolEntry<CONSTANT_Utf8_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_Integer:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_Integer (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_Integer", i);
         readPoolEntry<CONSTANT_Integer_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_Float:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_Float (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_Float", i);
         readPoolEntry<CONSTANT_Float_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_Long:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_Long (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_Long", i);
         readPoolEntry<CONSTANT_Long_info>(pool, i, _classFileStream);
         ++i;
         break;
       case CONSTANT_Double:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_Double (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_Double", i);
         readPoolEntry<CONSTANT_Double_info>(pool, i, _classFileStream);
         ++i;
         break;
       case CONSTANT_Class:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_Class (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_Class", i);
         readPoolEntry<CONSTANT_Class_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_String:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_String (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_String", i);
         readPoolEntry<CONSTANT_String_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_Fieldref:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_Fieldref (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_Fieldref", i);
         readPoolEntry<CONSTANT_Fieldref_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_Methodref:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_Methodref (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_Methodref", i);
         readPoolEntry<CONSTANT_Methodref_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_InterfaceMethodref:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_InterfaceMethodref (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_InterfaceMethodref", i);
         readPoolEntry<CONSTANT_InterfaceMethodref_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_NameAndType:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_NameAndType (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_NameAndType", i);
         readPoolEntry<CONSTANT_NameAndType_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_MethodHandle:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_MethodHandle (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_MethodHandle", i);
         readPoolEntry<CONSTANT_MethodHandle_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_MethodType:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_MethodType (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_MethodType", i);
         readPoolEntry<CONSTANT_MethodType_info>(pool, i, _classFileStream);
         break;
       case CONSTANT_InvokeDynamic:
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("%d tag is CONSTANT_InvokeDynamic (%S)", i, className.c_str());
-        }
+        EXPLORE_IF_COM(className, "%d tag is CONSTANT_InvokeDynamic", i);
         readPoolEntry<CONSTANT_InvokeDynamic_info>(pool, i, _classFileStream);
         break;
       default:assert(false);

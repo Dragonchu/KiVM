@@ -81,16 +81,12 @@ ClassSearchResult ClassPathManager::searchClass(const String &className) {
       EXPLORE("Searching %S in path %S", className.c_str(), tempPath.c_str());
     }
     if (entry._source == ClassSource::DIR) {
-      if (className.substr(0, 3) == L"com") {
-        EXPLORE("Entry is DIR");
-      }
+      EXPLORE_IF_COM(className, "Entry is DIR");
       if (FileSystem::canRead(tempPath)) {
         buffer = (u1 *) FileSystem::createFileMapping(tempPath, &fd, &bufferSize);
         classSource = buffer != nullptr ? ClassSource::DIR : ClassSource::NOT_FOUND;
         classFile = std::move(tempPath);
-        if (className.substr(0, 3) == L"com") {
-          EXPLORE("Class is found %S", className.c_str());
-        }
+        EXPLORE_IF_COM(className,"Class is found %S", className.c_str());
         break;
       }
 

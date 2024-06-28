@@ -97,19 +97,15 @@ ClassFileStream &ClassFileStream::operator>>(CONSTANT_Utf8_info &info) {
   info.length = get2();
   info.bytes = new u1[info.length];
   getBytes(info.bytes, info.length);
-  if (this->_source.find(L"com") != std::wstring::npos) {
-    std::string utf8String(reinterpret_cast<char *>(info.bytes), info.length);
-    EXPLORE("Utf8 is:   %s", utf8String.c_str());
-  }
+  std::string utf8String(reinterpret_cast<char *>(info.bytes), info.length);
+  EXPLORE_IF_COM(this->_source, "Utf8 is:   %s", utf8String.c_str());
   return *this;
 }
 
 ClassFileStream &ClassFileStream::operator>>(CONSTANT_Class_info &info) {
   info.tag = get1();
   info.name_index = get2();
-  if (this->_source.find(L"com") != std::wstring::npos) {
-    EXPLORE("Class_info name_index: %d", info.name_index);
-  }
+  EXPLORE_IF_COM(this->_source, "Class_info name_index: %d", info.name_index);
   return *this;
 }
 
@@ -156,9 +152,7 @@ ClassFileStream &ClassFileStream::operator>>(CONSTANT_Methodref_info &info) {
   info.tag = get1();
   info.class_index = get2();
   info.name_and_type_index = get2();
-  if (this->_source.find(L"com") != std::wstring::npos) {
-    EXPLORE("Methodref_info class_index: %d,  name_and_type_index: %d", info.class_index, info.name_and_type_index);
-  }
+  EXPLORE_IF_COM(this->_source, "Methodref_info class_index: %d,  name_and_type_index: %d", info.class_index, info.name_and_type_index);
   return *this;
 }
 
